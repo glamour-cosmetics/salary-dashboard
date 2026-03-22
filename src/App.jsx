@@ -1,5 +1,7 @@
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import { TelegramProvider } from './context/TelegramContext'
+import { AuthProvider } from './context/AuthContext'
+import ProtectedRoute from './components/ProtectedRoute'
 
 import Login from './pages/Login/Login'
 import SecureAccount from './pages/SecureAccount/SecureAccount'
@@ -12,18 +14,20 @@ import Feedback from './pages/Feedback/Feedback'
 export default function App() {
   return (
     <TelegramProvider>
-      <MemoryRouter>
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/secure-account" element={<SecureAccount />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/salary" element={<Salary />} />
-          <Route path="/kpi" element={<KPI />} />
-          <Route path="/kpi-detail" element={<KPI />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/feedback" element={<Feedback />} />
-        </Routes>
-      </MemoryRouter>
+      <AuthProvider>
+        <MemoryRouter>
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path="/secure-account" element={<SecureAccount />} />
+            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/salary" element={<ProtectedRoute><Salary /></ProtectedRoute>} />
+            <Route path="/kpi" element={<ProtectedRoute><KPI /></ProtectedRoute>} />
+            <Route path="/kpi-detail" element={<ProtectedRoute><KPI /></ProtectedRoute>} />
+            <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+            <Route path="/feedback" element={<ProtectedRoute><Feedback /></ProtectedRoute>} />
+          </Routes>
+        </MemoryRouter>
+      </AuthProvider>
     </TelegramProvider>
   )
 }

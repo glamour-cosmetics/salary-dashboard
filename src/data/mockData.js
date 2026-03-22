@@ -4,6 +4,7 @@
 
 export const mockEmployee = {
   id: '882910',
+  workplace_id: '882910',
   name: 'MAHAMMADJONOV RAVSHANJON',
   position: 'Sales Manager',
   grade: 'Senior Associate',
