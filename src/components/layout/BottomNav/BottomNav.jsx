@@ -10,9 +10,9 @@ export default function BottomNav() {
         <span className="material-symbols-outlined" style={{ fontVariationSettings: isActive('/dashboard') ? "'FILL' 1" : "" }}>dashboard</span>
         <span className="text-[11px] font-medium tracking-normal">Dashboard</span>
       </Link>
-      <Link to="/salary" className={`flex flex-col items-center justify-center px-4 py-1 transition-all ${isActive('/salary') ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-200 rounded-xl scale-95' : 'text-slate-400 dark:text-slate-500 hover:text-blue-600'}`}>
+      <Link to="/sales" className={`flex flex-col items-center justify-center px-4 py-1 transition-all ${isActive('/salary') ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-200 rounded-xl scale-95' : 'text-slate-400 dark:text-slate-500 hover:text-blue-600'}`}>
         <span className="material-symbols-outlined" style={{ fontVariationSettings: isActive('/salary') ? "'FILL' 1" : "" }}>payments</span>
-        <span className="text-[11px] font-medium tracking-normal">Salary</span>
+        <span className="text-[11px] font-medium tracking-normal">Sales</span>
       </Link>
       <Link to="/kpi" className={`flex flex-col items-center justify-center px-4 py-1 transition-all ${isActive('/kpi') ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-200 rounded-xl scale-95' : 'text-slate-400 dark:text-slate-500 hover:text-blue-600'}`}>
         <span className="material-symbols-outlined" style={{ fontVariationSettings: isActive('/kpi') ? "'FILL' 1" : "" }}>query_stats</span>

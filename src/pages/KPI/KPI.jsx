@@ -11,14 +11,14 @@ export default function KPI() {
   const [showModal, setShowModal] = useState(false)
 
   const kpi = dashboardData?.kpi
-  const currency = dashboardData?.salary?.currency
-
+  const currency = dashboardData?.salary?.currency ?? 'UZS'
+  console.log(dashboardData)
   return (
     <div className="min-h-screen bg-surface pb-32">
       <TopBar
         title="KPI Details"
-        subtitle={employee.name}
-        avatarUrl={employee.avatarUrl}
+        subtitle={employee?.name}
+        avatarUrl={employee?.avatarUrl}
         period={periodLabel}
         onPeriodClick={() => setShowModal(true)}
       />
@@ -37,6 +37,7 @@ export default function KPI() {
         </div>
       ) : dashboardData && (
         <main className="px-5 pt-6 space-y-6 max-w-2xl mx-auto">
+
           {/* Sales performance */}
           <section className="bg-surface-container-low rounded-xl p-6 editorial-shadow relative overflow-hidden">
             <div className="absolute top-0 right-0 p-4">
@@ -60,25 +61,25 @@ export default function KPI() {
 
             <div className="grid grid-cols-1 gap-4">
               {/* Revenue expandable */}
-              <div className="bg-surface-container-lowest rounded-lg overflow-hidden transition-all duration-300">
+              <div className="bg-surface-container-lowest rounded-lg overflow-hidden">
                 <div className="flex flex-col p-4 cursor-pointer" onClick={() => setRevenueExpanded(!revenueExpanded)}>
                   <div className="flex justify-between items-start">
                     <span className="text-[10px] font-semibold text-outline uppercase tracking-wider mb-1">Actual Revenue</span>
                     <span className={`material-symbols-outlined text-outline text-lg transition-transform duration-300 ${revenueExpanded ? 'rotate-180' : ''}`}>expand_more</span>
                   </div>
                   <span className="text-xl font-bold text-blue-900">
-                    {formatCurrency(kpi.actualRevenue, '')} <span className="text-xs font-medium">{currency}</span>
+                    {formatCurrency(kpi.sales.actual, '')} <span className="text-xs font-medium">{currency}</span>
                   </span>
                 </div>
                 {revenueExpanded && (
                   <div className="p-4 space-y-3 border-t border-slate-100 bg-slate-50/50">
                     <div className="flex justify-between items-center">
                       <span className="text-[10px] uppercase">Orders Total</span>
-                      <span className="text-xs font-bold">{formatCurrency(kpi.ordersTotal)}</span>
+                      <span className="text-xs font-bold">{formatCurrency(kpi.ordersTotal, '')} {currency}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-[10px] uppercase">Returns Total</span>
-                      <span className="text-xs font-bold text-error">{formatCurrency(kpi.returnsTotal)}</span>
+                      <span className="text-xs font-bold text-error">{formatCurrency(kpi.returnsTotal, '')} {currency}</span>
                     </div>
                   </div>
                 )}
@@ -89,12 +90,14 @@ export default function KPI() {
                 <div className="bg-surface-container-lowest p-3 rounded-lg flex flex-col">
                   <span className="text-[10px] font-semibold text-outline uppercase tracking-wider mb-1">Plan</span>
                   <span className="text-sm font-bold text-on-surface">
-                    {formatCurrency(kpi.salesPlan, '')} <span className="text-[10px]">{currency}</span>
+                    {formatCurrency(kpi.sales.plan, '')} <span className="text-[10px]">{currency}</span>
                   </span>
                 </div>
-                <div className="bg-surface-container-lowest p-3 rounded-lg flex flex-col border-l-4 border-secondary">
-                  <span className="text-[10px] font-semibold text-outline uppercase tracking-wider mb-1">Overplan</span>
-                  <span className="text-sm font-bold text-secondary">+{formatCurrency(kpi.overplan, '')}</span>
+                <div className={`bg-surface-container-lowest p-3 rounded-lg flex flex-col border-l-4 ${kpi.overplan > 0 ? 'border-secondary' : 'border-red-500'}`}>
+                  <span className="text-[10px] font-semibold text-outline uppercase tracking-wider mb-1">{kpi.overplan > 0 ? `Overplan`: `Shortage`}</span>
+                  <span className={`text-sm font-bold ${kpi.overplan > 0 ? 'text-secondary' : 'text-error'}`}>
+                    {kpi.overplan > 0 ? `+${formatCurrency(kpi.overplan, '')}` : `-${formatCurrency(kpi.sales.plan - kpi.sales.actual, '')}` }
+                  </span>
                 </div>
               </div>
             </div>
@@ -118,7 +121,10 @@ export default function KPI() {
                   <div className="text-right"><p className="text-[10px] uppercase">Plan</p><p className="text-sm font-medium">{kpi.acb.plan}</p></div>
                 </div>
                 <div className="w-full h-2 bg-surface-container-highest rounded-full overflow-hidden">
-                  <div className="h-full bg-secondary rounded-full" style={{ width: '100%' }}></div>
+                  <div
+                    className="h-full bg-secondary rounded-full"
+                    style={{ width: `${Math.min(kpi.acb.achievement, 100)}%` }}
+                  />
                 </div>
               </div>
             </section>
@@ -129,7 +135,9 @@ export default function KPI() {
               </div>
               <span className="text-[11px] uppercase tracking-widest text-outline block mb-4">Bonuses Unlocked</span>
               <h3 className="text-lg font-bold leading-tight mb-4 text-primary">
-                {kpi.overachievementSteps.completed} Overachievement Steps Completed!
+                {kpi.overachievementSteps.completed === 0
+                  ? 'No steps completed yet'
+                  : `${kpi.overachievementSteps.completed} Step${kpi.overachievementSteps.completed > 1 ? 's' : ''} Completed!`}
               </h3>
               <div className="flex justify-between items-center gap-2 mt-2">
                 {Array.from({ length: kpi.overachievementSteps.completed }, (_, i) => (
@@ -143,8 +151,14 @@ export default function KPI() {
                   </div>
                 ))}
               </div>
+              {kpi.overachievementSteps.salesGap > 0 && (
+                <p className="text-[10px] text-outline mt-4 text-center">
+                  +{formatCurrency(kpi.overachievementSteps.salesGap, '')} {currency} to next bonus
+                </p>
+              )}
             </section>
           </div>
+
         </main>
       )}
 

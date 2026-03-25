@@ -1,13 +1,12 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import { login as apiLogin } from '../../services/api'
 
 export default function Login() {
   const navigate = useNavigate()
-  const { login: authLogin } = useAuth()
+  const { signIn } = useAuth()
 
-  const [username, setUsername] = useState('')
+  const [login, setLogin] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -17,9 +16,8 @@ export default function Login() {
     setError('')
     setLoading(true)
     try {
-      const data = await apiLogin(username, password)
-      authLogin(data)
-      navigate(data.mustChangePassword ? '/secure-account' : '/dashboard')
+      const { mustChangePassword } = await signIn(login, password)
+      navigate(mustChangePassword ? '/secure-account' : '/dashboard')
     } catch (err) {
       setError('Invalid credentials. Please try again.')
     } finally {
@@ -52,8 +50,8 @@ export default function Login() {
                     className="w-full bg-surface-container-lowest border-none rounded-lg px-4 py-4 text-on-surface outline-none focus:ring-2 focus:ring-primary/20"
                     placeholder="Username"
                     type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    value={login}
+                    onChange={(e) => setLogin(e.target.value)}
                     required
                     disabled={loading}
                   />

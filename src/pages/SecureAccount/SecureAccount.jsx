@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { changePassword as apiChangePassword } from '../../services/api'
 
@@ -11,16 +11,36 @@ function validate(password) {
   }
 }
 
+function RuleItem({ met, label }) {
+  return (
+    <div className="flex items-center gap-3">
+      <span
+        className={`material-symbols-outlined text-[18px] ${met ? 'text-secondary' : 'text-outline-variant'}`}
+        style={met ? { fontVariationSettings: "'FILL' 1" } : {}}
+      >
+        {met ? 'check_circle' : 'radio_button_unchecked'}
+      </span>
+      <span className="text-[0.8125rem]">{label}</span>
+    </div>
+  )
+}
+
 export default function SecureAccount() {
   const navigate = useNavigate()
-  const { onPasswordChanged } = useAuth()
+  const { isAuthenticated, mustChangePassword, onPasswordChanged } = useAuth()
 
+  const [oldPassword, setOldPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirm, setConfirm] = useState('')
+  const [showOld, setShowOld] = useState(false)
   const [showNew, setShowNew] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
+  // Route guards
+  if (!isAuthenticated) return <Navigate to="/" replace />
+  if (!mustChangePassword) return <Navigate to="/dashboard" replace />
 
   const rules = validate(newPassword)
   const allRulesMet = rules.minLength && rules.hasNumber && rules.hasSpecial
@@ -40,28 +60,14 @@ export default function SecureAccount() {
 
     setLoading(true)
     try {
-      await apiChangePassword(newPassword)
+      await apiChangePassword(oldPassword, newPassword)
       onPasswordChanged()
       navigate('/dashboard')
-    } catch (err) {
-      setError('Failed to update password. Please try again.')
+    } catch {
+      setError('Failed to update password. Please check your current password and try again.')
     } finally {
       setLoading(false)
     }
-  }
-
-  function RuleItem({ met, label }) {
-    return (
-      <div className="flex items-center gap-3">
-        <span
-          className={`material-symbols-outlined text-[18px] ${met ? 'text-secondary' : 'text-outline-variant'}`}
-          style={met ? { fontVariationSettings: "'FILL' 1" } : {}}
-        >
-          {met ? 'check_circle' : 'radio_button_unchecked'}
-        </span>
-        <span className="text-[0.8125rem]">{label}</span>
-      </div>
-    )
   }
 
   return (
@@ -82,6 +88,27 @@ export default function SecureAccount() {
 
           <div className="bg-surface-container-low rounded-xl p-6">
             <form className="space-y-6" onSubmit={handleSubmit}>
+
+              {/* Current password */}
+              <div className="space-y-2">
+                <label className="text-[0.75rem] font-bold uppercase tracking-widest text-outline block">Current Password</label>
+                <div className="relative">
+                  <input
+                    className="w-full bg-surface-container-lowest border-none rounded-lg px-4 py-3.5 text-on-surface outline-none focus:ring-2 focus:ring-primary/20"
+                    type={showOld ? 'text' : 'password'}
+                    placeholder="••••••••"
+                    value={oldPassword}
+                    onChange={(e) => setOldPassword(e.target.value)}
+                    required
+                    disabled={loading}
+                  />
+                  <button type="button" className="absolute right-4 top-1/2 -translate-y-1/2 text-outline" onClick={() => setShowOld(v => !v)}>
+                    <span className="material-symbols-outlined text-[20px]">{showOld ? 'visibility_off' : 'visibility'}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* New password */}
               <div className="space-y-2">
                 <label className="text-[0.75rem] font-bold uppercase tracking-widest text-outline block">New Password</label>
                 <div className="relative">
@@ -94,18 +121,13 @@ export default function SecureAccount() {
                     required
                     disabled={loading}
                   />
-                  <button
-                    type="button"
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-outline"
-                    onClick={() => setShowNew((v) => !v)}
-                  >
-                    <span className="material-symbols-outlined text-[20px]">
-                      {showNew ? 'visibility_off' : 'visibility'}
-                    </span>
+                  <button type="button" className="absolute right-4 top-1/2 -translate-y-1/2 text-outline" onClick={() => setShowNew(v => !v)}>
+                    <span className="material-symbols-outlined text-[20px]">{showNew ? 'visibility_off' : 'visibility'}</span>
                   </button>
                 </div>
               </div>
 
+              {/* Confirm password */}
               <div className="space-y-2">
                 <label className="text-[0.75rem] font-bold uppercase tracking-widest text-outline block">Confirm New Password</label>
                 <div className="relative">
@@ -118,14 +140,8 @@ export default function SecureAccount() {
                     required
                     disabled={loading}
                   />
-                  <button
-                    type="button"
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-outline"
-                    onClick={() => setShowConfirm((v) => !v)}
-                  >
-                    <span className="material-symbols-outlined text-[20px]">
-                      {showConfirm ? 'visibility_off' : 'visibility'}
-                    </span>
+                  <button type="button" className="absolute right-4 top-1/2 -translate-y-1/2 text-outline" onClick={() => setShowConfirm(v => !v)}>
+                    <span className="material-symbols-outlined text-[20px]">{showConfirm ? 'visibility_off' : 'visibility'}</span>
                   </button>
                 </div>
               </div>
@@ -137,14 +153,12 @@ export default function SecureAccount() {
                 <RuleItem met={rules.hasSpecial} label="One special character (!@#)" />
               </div>
 
-              {error && (
-                <p className="text-error text-sm font-medium text-center">{error}</p>
-              )}
+              {error && <p className="text-error text-sm font-medium text-center">{error}</p>}
 
               <button
                 className="w-full bg-gradient-to-br from-primary-container to-primary text-on-primary font-semibold py-4 rounded-lg shadow-lg active:scale-95 transition-transform disabled:opacity-60"
                 type="submit"
-                disabled={loading}
+                disabled={loading || !oldPassword}
               >
                 {loading ? 'Saving…' : 'Save & Continue'}
               </button>

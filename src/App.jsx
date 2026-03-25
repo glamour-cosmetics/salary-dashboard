@@ -10,6 +10,7 @@ import Salary from './pages/Salary/Salary'
 import KPI from './pages/KPI/KPI'
 import Settings from './pages/Settings/Settings'
 import Feedback from './pages/Feedback/Feedback'
+import Sales from './pages/Sales'
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
         <MemoryRouter>
           <Routes>
             <Route path="/" element={<Login />} />
+            <Route path="/sales" element={<ProtectedRoute><Sales /></ProtectedRoute>} />
             <Route path="/secure-account" element={<SecureAccount />} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/salary" element={<ProtectedRoute><Salary /></ProtectedRoute>} />
