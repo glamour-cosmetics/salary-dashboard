@@ -1,7 +1,29 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
 
 export default function Login() {
   const navigate = useNavigate()
+  const { signIn } = useAuth()
+
+  const [login, setLogin] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  async function handleSubmit(e) {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+    try {
+      const { mustChangePassword } = await signIn(login, password)
+      navigate(mustChangePassword ? '/secure-account' : '/dashboard')
+    } catch (err) {
+      setError('Invalid credentials. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-surface">
@@ -20,15 +42,18 @@ export default function Login() {
           </div>
 
           <div className="bg-surface-container-low rounded-xl p-8 space-y-8">
-            <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); navigate('/secure-account') }}>
+            <form className="space-y-6" onSubmit={handleSubmit}>
               <div className="space-y-2">
-                <label className="block text-[0.75rem] font-bold uppercase tracking-widest text-outline ml-1">Identity</label>
+                <label className="block text-[0.75rem] font-bold uppercase tracking-widest text-outline ml-1">Login</label>
                 <div className="relative">
                   <input
                     className="w-full bg-surface-container-lowest border-none rounded-lg px-4 py-4 text-on-surface outline-none focus:ring-2 focus:ring-primary/20"
-                    placeholder="+998... or Username"
+                    placeholder="Username"
                     type="text"
-                    defaultValue="+998901234567"
+                    value={login}
+                    onChange={(e) => setLogin(e.target.value)}
+                    required
+                    disabled={loading}
                   />
                   <div className="absolute inset-y-0 right-4 flex items-center text-outline/30">
                     <span className="material-symbols-outlined">person</span>
@@ -37,13 +62,16 @@ export default function Login() {
               </div>
 
               <div className="space-y-2">
-                <label className="block text-[0.75rem] font-bold uppercase tracking-widest text-outline ml-1">Security Key</label>
+                <label className="block text-[0.75rem] font-bold uppercase tracking-widest text-outline ml-1">Password</label>
                 <div className="relative">
                   <input
                     className="w-full bg-surface-container-lowest border-none rounded-lg px-4 py-4 text-on-surface outline-none focus:ring-2 focus:ring-primary/20"
                     placeholder="••••••••"
                     type="password"
-                    defaultValue="password123"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    disabled={loading}
                   />
                   <div className="absolute inset-y-0 right-4 flex items-center text-outline/30">
                     <span className="material-symbols-outlined">lock</span>
@@ -51,11 +79,16 @@ export default function Login() {
                 </div>
               </div>
 
+              {error && (
+                <p className="text-error text-sm font-medium text-center">{error}</p>
+              )}
+
               <button
-                className="w-full editorial-gradient text-on-primary py-5 rounded-lg font-bold tracking-tight text-lg shadow-[0_12px_32px_rgba(0,70,140,0.15)] active:scale-95 transition-transform"
+                className="w-full editorial-gradient text-on-primary py-5 rounded-lg font-bold tracking-tight text-lg shadow-[0_12px_32px_rgba(0,70,140,0.15)] active:scale-95 transition-transform disabled:opacity-60"
                 type="submit"
+                disabled={loading}
               >
-                Sign In
+                {loading ? 'Signing In…' : 'Sign In'}
               </button>
             </form>
 

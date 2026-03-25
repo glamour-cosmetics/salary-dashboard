@@ -25,3 +25,11 @@ export function formatPercent(value) {
 export function formatCompact(value) {
   return new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 }).format(value)
 }
+
+/**
+ * Format a { month, year } period object into a human-readable label
+ * @param {{ month: number, year: number }} period
+ */
+export function formatPeriod({ month, year }) {
+  return new Date(year, month - 1).toLocaleString('en', { month: 'long', year: 'numeric' })
+}
