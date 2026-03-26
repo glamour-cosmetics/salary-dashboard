@@ -1,6 +1,7 @@
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import { TelegramProvider } from './context/TelegramContext'
 import { AuthProvider } from './context/AuthContext'
+import { LanguageProvider } from './context/LanguageContext'
 import ProtectedRoute from './components/ProtectedRoute'
 
 import Login from './pages/Login/Login'
@@ -14,6 +15,7 @@ import Sales from './pages/Sales'
 
 export default function App() {
   return (
+    <LanguageProvider>
     <TelegramProvider>
       <AuthProvider>
         <MemoryRouter>
@@ -31,5 +33,6 @@ export default function App() {
         </MemoryRouter>
       </AuthProvider>
     </TelegramProvider>
+    </LanguageProvider>
   )
 }

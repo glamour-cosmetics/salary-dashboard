@@ -5,6 +5,7 @@ import BottomNav from '../../components/layout/BottomNav/BottomNav'
 import Modal from '../../components/common/Modal/modal'
 import { useAuth } from '../../context/AuthContext'
 import { formatCurrency, formatPercent } from '../../utils/formatters'
+import { useT } from '../../i18n/useT'
 
 const CIRCLE_R = 70
 const CIRCLE_CIRCUMFERENCE = 2 * Math.PI * CIRCLE_R
@@ -12,6 +13,8 @@ const CIRCLE_CIRCUMFERENCE = 2 * Math.PI * CIRCLE_R
 export default function Dashboard() {
 	const navigate = useNavigate()
 	const { employee, period, setPeriod, periodLabel, dashboardData, dashboardLoading } = useAuth()
+	const t = useT('dashboard')
+	const tBreakdown = useT('breakdown')
 	const [showModal, setShowModal] = useState(false)
 	const salary = dashboardData?.salary
 	const kpi = dashboardData?.kpi
@@ -21,7 +24,7 @@ export default function Dashboard() {
 	return (
 		<div className="min-h-screen bg-surface pb-32">
 			<TopBar
-				title="Dashboard"
+				title={t.title}
 				subtitle={employee?.name}
 				avatarUrl={employee?.avatarUrl}
 				period={periodLabel}
@@ -59,7 +62,7 @@ export default function Dashboard() {
 
 					{/* Total salary hero */}
 					<section className="space-y-2">
-						<h2 className="text-[11px] uppercase tracking-widest font-semibold text-outline">Total Estimated Salary</h2>
+						<h2 className="text-[11px] uppercase tracking-widest font-semibold text-outline">{t.totalSalaryLabel}</h2>
 						<div className="bg-gradient-to-br from-primary-container to-primary p-8 rounded-xl shadow-lg relative overflow-hidden">
 							<div className="absolute -right-10 -top-10 w-40 h-40 bg-white/5 rounded-full blur-3xl"></div>
 							<div className="relative z-10 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
@@ -70,11 +73,11 @@ export default function Dashboard() {
 										</span>
 										<span className="text-lg md:text-2xl font-medium text-on-primary-container">{salary.currency}</span>
 									</div>
-									<p className="text-on-primary-container/80 text-sm mt-1 font-medium">Estimated payout for current performance</p>
+									<p className="text-on-primary-container/80 text-sm mt-1 font-medium">{t.salarySubtitle}</p>
 								</div>
 								<div className="bg-white/10 backdrop-blur-md rounded-lg px-4 py-2 border border-white/10 inline-flex items-center gap-2 self-start md:self-auto">
-									{/* <span className="material-symbols-outlined text-secondary-fixed text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>trending_down</span> */}
-									<span className="text-white text-xs font-bold">{salary.trend}</span>
+									<span className={`material-symbols-outlined text-sm ${kpi.overplan > 0 ? `text-secondary-fixed`: `text-red-500`} `} style={{ fontVariationSettings: "'FILL' 1" }}>{kpi.overplan > 0 ? `trending_up`: `trending_down`}</span>
+									<span className="text-white text-xs font-bold">{t[salary.trendKey]}</span>
 								</div>
 							</div>
 						</div>
@@ -85,7 +88,7 @@ export default function Dashboard() {
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 						<section className="bg-surface-container-lowest p-6 rounded-xl space-y-6">
 							<div className="flex justify-between items-center">
-								<h2 className="text-sm font-bold uppercase tracking-wider text-on-surface-variant">Plan Achievement</h2>
+								<h2 className="text-sm font-bold uppercase tracking-wider text-on-surface-variant">{t.planAchievement}</h2>
 								<span className="material-symbols-outlined text-secondary" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
 							</div>
 							<div className="flex flex-col items-center justify-center py-4 relative">
@@ -104,7 +107,7 @@ export default function Dashboard() {
 									<div className="absolute inset-0 flex flex-col items-center justify-center">
 										<span className="text-3xl font-black text-on-surface tracking-tighter">{formatPercent(planPct)}</span>
 										<span className="text-[10px] font-bold text-secondary uppercase">
-											{planPct >= 100 ? 'Exceeded' : 'In Progress'}
+											{planPct >= 100 ? t.exceeded : t.inProgress}
 										</span>
 									</div>
 								</div>
@@ -112,7 +115,7 @@ export default function Dashboard() {
 						</section>
 
 						<section className="space-y-4">
-							<h2 className="text-sm font-bold uppercase tracking-wider text-on-surface-variant px-1">KPI Quick Stats</h2>
+							<h2 className="text-sm font-bold uppercase tracking-wider text-on-surface-variant px-1">{t.kpiStats}</h2>
 							<div className="grid grid-cols-1 gap-3">
 								<div
 									className="bg-surface-container-lowest p-4 rounded-xl flex items-center justify-between cursor-pointer"
@@ -123,7 +126,7 @@ export default function Dashboard() {
 											<span className="material-symbols-outlined text-secondary">payments</span>
 										</div>
 										<div>
-											<p className="text-xs font-bold uppercase tracking-tighter">Sales</p>
+											<p className="text-xs font-bold uppercase tracking-tighter">{t.sales}</p>
 											<p className="text-lg font-bold text-secondary">{formatPercent(kpi.planAchievement)}</p>
 										</div>
 									</div>
@@ -136,7 +139,7 @@ export default function Dashboard() {
 											<span className="material-symbols-outlined text-secondary">shopping_cart</span>
 										</div>
 										<div>
-											<p className="text-xs font-bold uppercase tracking-tighter">ACB</p>
+											<p className="text-xs font-bold uppercase tracking-tighter">{t.acb}</p>
 											<p className="text-lg font-bold text-secondary">{formatPercent(kpi.acb.achievement)}</p>
 										</div>
 									</div>
@@ -149,8 +152,8 @@ export default function Dashboard() {
 					{/* Working cycle progress */}
 					<section className="space-y-3">
 						<div className="flex justify-between items-end px-1">
-							<h2 className="text-[12px] font-bold uppercase tracking-widest text-outline">Working Cycle Progress</h2>
-							<p className="text-[14px] font-bold text-primary">{salary.workingDays.completed} / {salary.workingDays.total} Days</p>
+							<h2 className="text-[12px] font-bold uppercase tracking-widest text-outline">{t.workingCycle}</h2>
+							<p className="text-[14px] font-bold text-primary">{salary.workingDays.completed} / {salary.workingDays.total} {t.days}</p>
 						</div>
 						<div className="bg-surface-container-high h-4 w-full rounded-full overflow-hidden p-1 shadow-inner">
 							<div
@@ -164,8 +167,8 @@ export default function Dashboard() {
 					<section className="bg-surface-container-lowest p-6 rounded-xl border-l-4 border-tertiary-fixed-dim">
 						<div className="flex justify-between items-start mb-6">
 							<div>
-								<h2 className="text-lg font-bold text-on-surface tracking-tight">
-									Next Goal: +{formatCurrency(kpi.overachievementSteps.nextGoalBonus)} bonus
+								<h2 className="text-l font-bold text-on-surface tracking-tight">
+									{t.nextGoal.replace('{{amount}}', formatCurrency(kpi.overachievementSteps.nextGoalBonus))}
 								</h2>
 								{/* <p className="text-on-surface-variant text-sm mt-1">Tier 3 Achievement Level</p> */}
 							</div>
@@ -174,8 +177,8 @@ export default function Dashboard() {
 							</div>
 						</div>
 						<div className="flex justify-between items-end mb-6">
-							<p className="text-xs font-bold text-on-surface-variant uppercase tracking-widest">Sales Gap</p>
-							<p className="text-xl font-bold text-on-surface tracking-tighter">
+							<p className="text-xs font-bold text-on-surface-variant uppercase tracking-widest">{t.salesGap}</p>
+							<p className="text-l font-bold text-on-surface tracking-tighter">
 								{formatCurrency(kpi.overachievementSteps.salesGap, '')}
 								<span className="text-xs font-medium text-outline ml-1 uppercase">{salary.currency}</span>
 							</p>
@@ -184,14 +187,14 @@ export default function Dashboard() {
 							onClick={() => navigate('/kpi')}
 							className="w-full mt-6 py-3 bg-surface-container-high hover:bg-surface-container-highest text-on-primary-fixed-variant font-bold rounded-lg transition-colors flex items-center justify-center gap-2"
 						>
-							View Detailed Breakdown
+							{t.viewBreakdown}
 							<span className="material-symbols-outlined text-sm">chevron_right</span>
 						</button>
 					</section>
 
 					{/* Earnings breakdown */}
 					<section className="space-y-4">
-						<h2 className="text-[12px] font-bold uppercase tracking-widest text-outline px-1">Earnings Breakdown</h2>
+						<h2 className="text-[12px] font-bold uppercase tracking-widest text-outline px-1">{t.earningsBreakdown}</h2>
 						<div className="space-y-3">
 							{salary.components.map((item) =>
 								item.highlight ? (
@@ -200,7 +203,7 @@ export default function Dashboard() {
 											<div className="w-10 h-10 rounded-lg bg-secondary text-on-secondary flex items-center justify-center">
 												<span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>{item.icon}</span>
 											</div>
-											<p className="text-sm font-bold text-secondary">{item.label}</p>
+											<p className="text-sm font-bold text-secondary">{tBreakdown[item.id]?.label}</p>
 										</div>
 										<p className="text-sm font-extrabold text-secondary">+{formatCurrency(item.amount, '')}</p>
 									</div>
@@ -211,8 +214,7 @@ export default function Dashboard() {
 												<span className="material-symbols-outlined text-primary">{item.icon}</span>
 											</div>
 											<div>
-												<p className="text-sm font-semibold text-on-surface">{item.label}</p>
-												{item.sublabel && <p className="text-[11px] text-on-surface-variant uppercase tracking-tighter">{item.sublabel}</p>}
+												<p className="text-sm font-semibold text-on-surface">{tBreakdown[item.id]?.label}</p>
 											</div>
 										</div>
 										<p className="text-sm font-bold text-on-surface">{formatCurrency(item.amount, '')}</p>
@@ -224,9 +226,9 @@ export default function Dashboard() {
 
 					{/* Final total */}
 					<section className="bg-surface-container-lowest rounded-2xl p-6 text-center space-y-2">
-						<p className="text-[12px] font-bold text-outline uppercase tracking-widest">Final Estimated Salary</p>
+						<p className="text-[12px] font-bold text-outline uppercase tracking-widest">{t.finalSalary}</p>
 						<p className="text-2xl font-black text-primary tracking-tight">{formatCurrency(salary.total)}</p>
-						<p className="text-[12px] text-outline font-bold tracking-tight">{salary.disclaimer}</p>
+						<p className="text-[12px] text-outline font-bold tracking-tight">{tBreakdown.disclaimer}</p>
 					</section>
 				</main>
 			)}

@@ -1,11 +1,12 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import { formatPeriod } from '../utils/formatters'
 import { apiLogin, getProfile, getDashboard, setTokens, clearTokens } from '../services/api'
+import { useLanguage } from './LanguageContext'
+import translations from '../i18n/translations'
 
 const AuthContext = createContext(null)
 
 const TTL = 60 * 60 * 1000 // 1 hour
-
 function cacheKey(workplaceId, month, year) {
   return `dashboard_${workplaceId}_${month}_${year}`
 }
@@ -59,6 +60,7 @@ function getDisplayName(profile) {
 }
 
 export function AuthProvider({ children }) {
+  const { language } = useLanguage()
   const stored = loadProfileFromStorage()
 
   const now = new Date()
@@ -177,7 +179,7 @@ export function AuthProvider({ children }) {
       mustChangePassword,
       period,
       setPeriod,
-      periodLabel: formatPeriod(period),
+      periodLabel: formatPeriod(period, translations[language]?.modal?.months),
       dashboardData,
       dashboardLoading,
       signIn,

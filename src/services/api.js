@@ -122,11 +122,11 @@ function toFloat(v) { return parseFloat(v) || 0 }
 
 function buildSalaryComponents(breakdown) {
   const map = [
-    { id: 'base',      icon: 'work',           label: 'Base Salary',             field: 'base_salary' },
-    { id: 'kpi',       icon: 'star',            label: 'KPI Bonus',               field: 'kpi_bonus',                 highlight: true },
-    { id: 'over',      icon: 'trending_up',     label: 'Overachievement Bonus',   field: 'overachievement_bonus',     highlight: true },
-    { id: 'transport', icon: 'directions_car',  label: 'Transportation',           field: 'transportation_compensation' },
-    { id: 'qual',      icon: 'school',          label: 'Qualification Bonus',      field: 'qualification_bonus' },
+    { id: 'base_salary',                 icon: 'work',           field: 'base_salary' },
+    { id: 'kpi_bonus',                   icon: 'star',            field: 'kpi_bonus',                 highlight: true },
+    { id: 'overachievement_bonus',       icon: 'trending_up',     field: 'overachievement_bonus',     highlight: true },
+    { id: 'transportation_compensation', icon: 'directions_car',  field: 'transportation_compensation' },
+    { id: 'qualification_bonus',         icon: 'school',          field: 'qualification_bonus' },
   ]
   return map
     .filter(({ field }) => toFloat(breakdown?.[field]) > 0)
@@ -141,8 +141,8 @@ function transformDashboard(raw) {
       total:       toFloat(raw.total_salary),
       currency:    'UZS',
       period:      `${raw.month}/${raw.year}`,
-      trend:       toFloat(raw.overall_achievement) >= 100 ? '↑ On target' : '↓ Below plan',
-      disclaimer:  raw.salary_plan_name ?? '',
+      trendKey:    toFloat(raw.overall_achievement) >= 100 ? 'on_target' : 'below_plan',
+      planName:    raw.salary_plan_name ?? '',
       workingDays: { completed: raw.elapsed_workdays ?? 0, total: raw.total_workdays ?? 1 },
       components:  buildSalaryComponents(b),
     },

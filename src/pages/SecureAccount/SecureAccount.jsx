@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { changePassword as apiChangePassword } from '../../services/api'
+import { useT } from '../../i18n/useT'
 
 function validate(password) {
   return {
@@ -28,6 +29,7 @@ function RuleItem({ met, label }) {
 export default function SecureAccount() {
   const navigate = useNavigate()
   const { isAuthenticated, mustChangePassword, onPasswordChanged } = useAuth()
+  const t = useT('security')
 
   const [oldPassword, setOldPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
@@ -50,11 +52,11 @@ export default function SecureAccount() {
     setError('')
 
     if (!allRulesMet) {
-      setError('Password does not meet the security requirements.')
+      setError(t.errorRequirements)
       return
     }
     if (newPassword !== confirm) {
-      setError('Passwords do not match.')
+      setError(t.errorMatch)
       return
     }
 
@@ -64,7 +66,7 @@ export default function SecureAccount() {
       onPasswordChanged()
       navigate('/dashboard')
     } catch {
-      setError('Failed to update password. Please check your current password and try again.')
+      setError(t.errorFailed)
     } finally {
       setLoading(false)
     }
@@ -82,8 +84,8 @@ export default function SecureAccount() {
       <main className="flex-grow flex items-center justify-center px-6 pt-24 pb-12">
         <div className="max-w-md w-full">
           <div className="mb-10 text-left">
-            <h2 className="text-[1.5rem] font-bold tracking-tight text-on-surface mb-3 leading-tight">Secure Your Account</h2>
-            <p className="text-[0.875rem] text-on-surface-variant leading-relaxed">Since this is your first time logging in, please set a new password.</p>
+            <h2 className="text-[1.5rem] font-bold tracking-tight text-on-surface mb-3 leading-tight">{t.title}</h2>
+            <p className="text-[0.875rem] text-on-surface-variant leading-relaxed">{t.subtitle}</p>
           </div>
 
           <div className="bg-surface-container-low rounded-xl p-6">
@@ -91,7 +93,7 @@ export default function SecureAccount() {
 
               {/* Current password */}
               <div className="space-y-2">
-                <label className="text-[0.75rem] font-bold uppercase tracking-widest text-outline block">Current Password</label>
+                <label className="text-[0.75rem] font-bold uppercase tracking-widest text-outline block">{t.currentPassword}</label>
                 <div className="relative">
                   <input
                     className="w-full bg-surface-container-lowest border-none rounded-lg px-4 py-3.5 text-on-surface outline-none focus:ring-2 focus:ring-primary/20"
@@ -110,7 +112,7 @@ export default function SecureAccount() {
 
               {/* New password */}
               <div className="space-y-2">
-                <label className="text-[0.75rem] font-bold uppercase tracking-widest text-outline block">New Password</label>
+                <label className="text-[0.75rem] font-bold uppercase tracking-widest text-outline block">{t.newPassword}</label>
                 <div className="relative">
                   <input
                     className="w-full bg-surface-container-lowest border-none rounded-lg px-4 py-3.5 text-on-surface outline-none focus:ring-2 focus:ring-primary/20"
@@ -129,7 +131,7 @@ export default function SecureAccount() {
 
               {/* Confirm password */}
               <div className="space-y-2">
-                <label className="text-[0.75rem] font-bold uppercase tracking-widest text-outline block">Confirm New Password</label>
+                <label className="text-[0.75rem] font-bold uppercase tracking-widest text-outline block">{t.confirmPassword}</label>
                 <div className="relative">
                   <input
                     className="w-full bg-surface-container-lowest border-none rounded-lg px-4 py-3.5 text-on-surface outline-none focus:ring-2 focus:ring-primary/20"
@@ -147,10 +149,10 @@ export default function SecureAccount() {
               </div>
 
               <div className="bg-surface-container-high/40 rounded-lg p-4 space-y-3">
-                <p className="text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant mb-1">Security Standards</p>
-                <RuleItem met={rules.minLength} label="At least 8 characters" />
-                <RuleItem met={rules.hasNumber} label="One number (0-9)" />
-                <RuleItem met={rules.hasSpecial} label="One special character (!@#)" />
+                <p className="text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant mb-1">{t.securityStandards}</p>
+                <RuleItem met={rules.minLength} label={t.ruleLength} />
+                <RuleItem met={rules.hasNumber} label={t.ruleNumber} />
+                <RuleItem met={rules.hasSpecial} label={t.ruleSpecial} />
               </div>
 
               {error && <p className="text-error text-sm font-medium text-center">{error}</p>}
@@ -160,14 +162,14 @@ export default function SecureAccount() {
                 type="submit"
                 disabled={loading || !oldPassword}
               >
-                {loading ? 'Saving…' : 'Save & Continue'}
+                {loading ? t.saving : t.saveAndContinue}
               </button>
             </form>
           </div>
 
           <div className="mt-8 flex items-center justify-center gap-2 text-outline">
             <span className="material-symbols-outlined text-[16px]">lock</span>
-            <span className="text-[0.75rem] font-medium tracking-tight">End-to-end encrypted password storage</span>
+            <span className="text-[0.75rem] font-medium tracking-tight">{t.encrypted}</span>
           </div>
         </div>
       </main>
