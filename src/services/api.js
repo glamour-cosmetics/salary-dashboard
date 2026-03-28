@@ -212,7 +212,19 @@ export async function getReturnDetail(returnId) {
   return res.data ?? res
 }
 
-/** No backend endpoint — resolves immediately */
-export function submitFeedback(_payload) {
-  return Promise.resolve({ success: true })
+/** GET /smartupx/route/clients/ */
+export async function getRouteClients({ weekday, likelyToOrder, page = 1 } = {}) {
+  const params = new URLSearchParams()
+  if (weekday != null) params.set('weekday', weekday)
+  if (likelyToOrder) params.set('likely_to_order', 'true')
+  params.set('page', page)
+  return request(`/smartupx/route/clients/?${params}`)
+}
+
+/** POST /smartupx/feedback/ */
+export function submitFeedback({ category, message }) {
+  return request('/smartupx/feedback/', {
+    method: 'POST',
+    body: JSON.stringify({ category, message }),
+  })
 }

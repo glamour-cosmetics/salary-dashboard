@@ -1,3 +1,5 @@
+import { useT } from '../../i18n/useT'
+
 function TransactionItem({ tx, onSelect }) {
     const { icon, iconBg, iconColor, title, subtitle, badge, badgeStyle, amount, amountColor } = tx
     return (
@@ -22,11 +24,12 @@ function TransactionItem({ tx, onSelect }) {
 }
 
 export default function TransactionList({ transactions, onSelect }) {
+    const t = useT('sales')
     return (
         <section className="space-y-4">
             <div className="flex items-center justify-between">
-                <h3 className="text-label-md font-bold uppercase tracking-widest text-outline">Transactions</h3>
-                <span className="text-xs text-on-primary-fixed-variant font-medium">{transactions.length} total</span>
+                <h3 className="text-label-md font-bold uppercase tracking-widest text-outline">{t.transactions}</h3>
+                <span className="text-xs text-on-primary-fixed-variant font-medium">{t.transactionsCount.replace('{{n}}', transactions.length)}</span>
             </div>
             <div className="space-y-2">
                 {transactions.map((tx) => (

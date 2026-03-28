@@ -1,13 +1,9 @@
-import { useState } from 'react'
 import TopBar from '../../components/layout/TopBar/TopBar'
 import BottomNav from '../../components/layout/BottomNav/BottomNav'
-import Modal from '../../components/common/Modal/modal'
 import { useAuth } from '../../context/AuthContext'
-import { formatCurrency } from '../../utils/formatters'
 
 export default function Salary() {
-  const { employee, period, setPeriod, periodLabel, dashboardData, dashboardLoading } = useAuth()
-  const [showModal, setShowModal] = useState(false)
+  const { employee, dashboardData, dashboardLoading } = useAuth()
 
   const salary = dashboardData?.salary
 
@@ -17,16 +13,6 @@ export default function Salary() {
         title="Salary Details"
         subtitle={employee.name}
         avatarUrl={employee.avatarUrl}
-        period={periodLabel}
-        onPeriodClick={() => setShowModal(true)}
-      />
-
-      <Modal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        selectedMonth={period.month}
-        selectedYear={period.year}
-        onConfirm={(month, year) => setPeriod({ month, year })}
       />
 
       {dashboardLoading ? (

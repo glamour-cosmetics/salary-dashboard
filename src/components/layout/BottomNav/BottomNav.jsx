@@ -16,9 +16,9 @@ export default function BottomNav() {
         <span className="material-symbols-outlined" style={{ fontVariationSettings: isActive('/salary') ? "'FILL' 1" : "" }}>payments</span>
         <span className="text-[11px] font-medium tracking-normal">{t.sales}</span>
       </Link>
-      <Link to="/kpi" className={`flex flex-col items-center justify-center px-4 py-1 transition-all ${isActive('/kpi') ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-200 rounded-xl scale-95' : 'text-slate-400 dark:text-slate-500 hover:text-blue-600'}`}>
-        <span className="material-symbols-outlined" style={{ fontVariationSettings: isActive('/kpi') ? "'FILL' 1" : "" }}>query_stats</span>
-        <span className="text-[11px] font-medium tracking-normal">{t.kpi}</span>
+      <Link to="/route" className={`flex flex-col items-center justify-center px-4 py-1 transition-all ${isActive('/route') ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-200 rounded-xl scale-95' : 'text-slate-400 dark:text-slate-500 hover:text-blue-600'}`}>
+        <span className="material-symbols-outlined" style={{ fontVariationSettings: isActive('/route') ? "'FILL' 1" : "" }}>distance</span>
+        <span className="text-[11px] font-medium tracking-normal">{t.route}</span>
       </Link>
       <Link to="/settings" className={`flex flex-col items-center justify-center px-4 py-1 transition-all ${isActive('/settings') ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-200 rounded-xl scale-95' : 'text-slate-400 dark:text-slate-500 hover:text-blue-600'}`}>
         <span className="material-symbols-outlined" style={{ fontVariationSettings: isActive('/settings') ? "'FILL' 1" : "" }}>settings</span>

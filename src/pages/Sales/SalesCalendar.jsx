@@ -1,4 +1,4 @@
-const DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+import { useT } from '../../i18n/useT'
 
 function buildDays(year, month) {
     const firstDow = (new Date(year, month - 1, 1).getDay() + 6) % 7 // Mon=0
@@ -17,6 +17,7 @@ function buildDays(year, month) {
 }
 
 export default function SalesCalendar({ year, month, selectedDay, onDaySelect, onPrevMonth, onNextMonth }) {
+    const t = useT('sales')
     const days = buildDays(year, month)
     const today = new Date()
     const isCurrentMonth = today.getFullYear() === year && today.getMonth() + 1 === month
@@ -24,7 +25,7 @@ export default function SalesCalendar({ year, month, selectedDay, onDaySelect, o
     return (
         <section className="bg-surface-container-low rounded-xl p-5 mb-6">
             <div className="grid grid-cols-7 gap-1 mb-4">
-                {DAY_LABELS.map(d => (
+                {t.days.map(d => (
                     <div key={d} className="text-center text-[10px] font-bold uppercase tracking-widest text-outline">{d}</div>
                 ))}
             </div>

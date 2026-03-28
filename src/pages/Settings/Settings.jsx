@@ -1,18 +1,15 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import TopBar from '../../components/layout/TopBar/TopBar'
 import BottomNav from '../../components/layout/BottomNav/BottomNav'
-import Modal from '../../components/common/Modal/modal'
 import { useAuth } from '../../context/AuthContext'
 import { useLanguage } from '../../context/LanguageContext'
 import { useT } from '../../i18n/useT'
 
 export default function Settings() {
   const navigate = useNavigate()
-  const { employee, period, setPeriod, periodLabel, logout } = useAuth()
+  const { employee, logout } = useAuth()
   const { language, changeLanguage, LANGUAGES } = useLanguage()
   const t = useT('settings')
-  const [showModal, setShowModal] = useState(false)
 
   function handleLogout() {
     logout()
@@ -25,16 +22,6 @@ export default function Settings() {
         title={t.title}
         subtitle={employee.name}
         avatarUrl={employee.avatarUrl}
-        period={periodLabel}
-        onPeriodClick={() => setShowModal(true)}
-      />
-
-      <Modal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        selectedMonth={period.month}
-        selectedYear={period.year}
-        onConfirm={(month, year) => setPeriod({ month, year })}
       />
 
       <main className="px-6 pt-8 space-y-8">
@@ -42,17 +29,12 @@ export default function Settings() {
         <section className="space-y-4">
           <h2 className="text-[10px] uppercase tracking-widest font-semibold text-outline">{t.profileIdentity}</h2>
           <div className="bg-surface-container-lowest rounded-xl p-6 shadow-sm flex flex-col items-center text-center">
-            <div className="relative">
-              <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-surface-container-low">
-                <img className="w-full h-full object-cover" src={employee.settingsAvatarUrl ?? employee.avatarUrl} alt="Profile" />
-              </div>
-              <button className="absolute bottom-0 right-0 bg-primary-container text-on-primary w-8 h-8 rounded-full flex items-center justify-center shadow-lg border-2 border-surface-container-lowest">
-                <span className="material-symbols-outlined text-sm">photo_camera</span>
-              </button>
+            <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-surface-container-low">
+              <img className="w-full h-full object-cover" src="/profile.jpg" alt="Profile" />
             </div>
             <div className="mt-4">
               <h3 className="text-lg font-bold">{employee.name}</h3>
-              <p className="text-sm text-on-surface-variant">{employee.grade} • ID: {employee.id}</p>
+              <p className="text-sm text-on-surface-variant">{employee.id}</p>
             </div>
           </div>
         </section>

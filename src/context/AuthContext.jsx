@@ -163,7 +163,7 @@ export function AuthProvider({ children }) {
     id: userId,
     workplace_id: workplaceId,
     name: getDisplayName(profile),
-    avatarUrl: profile.avatar ?? profile.photo ?? null,
+    avatarUrl: profile.photo_url ?? null,
     role_type: profile.workplace?.role_type ?? '',
     workplace_name: profile.workplace?.name ?? '',
     organization_name: profile.workplace?.organization_name ?? '',
