@@ -14,6 +14,7 @@ import Feedback from './pages/Feedback/Feedback'
 import Sales from './pages/Sales'
 import RoutePage from './pages/Route'
 import OrderDetail from './pages/OrderDetail'
+import ReturnDetail from './pages/ReturnDetail'
 
 export default function App() {
   return (
@@ -30,6 +31,7 @@ export default function App() {
             <Route path="/kpi" element={<ProtectedRoute><KPI /></ProtectedRoute>} />
             <Route path="/route" element={<ProtectedRoute><RoutePage /></ProtectedRoute>} />
             <Route path="/order/:id" element={<ProtectedRoute><OrderDetail /></ProtectedRoute>} />
+            <Route path="/return/:id" element={<ProtectedRoute><ReturnDetail /></ProtectedRoute>} />
             <Route path="/kpi-detail" element={<ProtectedRoute><KPI /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             <Route path="/feedback" element={<ProtectedRoute><Feedback /></ProtectedRoute>} />

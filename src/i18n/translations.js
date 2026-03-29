@@ -1,5 +1,12 @@
 const translations = {
   ru: {
+    returnDetail: {
+      title: 'Детали возврата',
+      returnId: 'Номер возврата',
+      client: 'Клиент',
+      returnDate: 'Дата возврата',
+      totalReturned: 'Сумма возврата',
+    },
     orderDetail: {
       title: 'Детали заказа',
       orderId: 'Номер заказа',
@@ -126,6 +133,7 @@ const translations = {
       labelPassword: 'Пароль',
       placeholderPassword: '••••••••',
       errorCredentials: 'Неверные данные. Попробуйте снова.',
+      errorUnauthorizedRole: 'Доступ запрещён. Только торговые агенты могут войти.',
       signingIn: 'Вход…',
       signIn: 'Войти',
       forgotPassword: 'Забыли пароль?',
@@ -176,6 +184,13 @@ const translations = {
     },
   },
   uz: {
+    returnDetail: {
+      title: 'Qaytarish tafsilotlari',
+      returnId: 'Qaytarish ID',
+      client: 'Mijoz',
+      returnDate: 'Qaytarish sanasi',
+      totalReturned: 'Qaytarilgan summa',
+    },
     orderDetail: {
       title: 'Buyurtma tafsilotlari',
       orderId: 'Buyurtma ID',
@@ -302,6 +317,7 @@ const translations = {
       labelPassword: 'Parol',
       placeholderPassword: '••••••••',
       errorCredentials: 'Noto\'g\'ri ma\'lumotlar. Qaytadan urinib ko\'ring.',
+      errorUnauthorizedRole: 'Kirish taqiqlangan. Faqat savdo agentlari tizimga kira oladi.',
       signingIn: 'Kirish…',
       signIn: 'Kirish',
       forgotPassword: 'Parolni unutdingizmi?',
@@ -352,6 +368,13 @@ const translations = {
     },
   },
   en: {
+    returnDetail: {
+      title: 'Return Detail',
+      returnId: 'Return ID',
+      client: 'Client',
+      returnDate: 'Return Date',
+      totalReturned: 'Total Returned',
+    },
     orderDetail: {
       title: 'Order Detail',
       orderId: 'Order ID',
@@ -478,6 +501,7 @@ const translations = {
       labelPassword: 'Password',
       placeholderPassword: '••••••••',
       errorCredentials: 'Invalid credentials. Please try again.',
+      errorUnauthorizedRole: 'Access denied. Only Sales Managers are allowed to log in.',
       signingIn: 'Signing In…',
       signIn: 'Sign In',
       forgotPassword: 'Forgot Password?',

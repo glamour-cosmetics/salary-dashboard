@@ -1,12 +1,12 @@
 import { useState, useRef, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Navigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useLanguage } from '../../context/LanguageContext'
 import { useT } from '../../i18n/useT'
 
 export default function Login() {
   const navigate = useNavigate()
-  const { signIn } = useAuth()
+  const { signIn, isAuthenticated, initializing } = useAuth()
   const { language, changeLanguage, LANGUAGES } = useLanguage()
   const t = useT('login')
 
@@ -27,6 +27,14 @@ export default function Login() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
+  if (initializing) return (
+    <div className="min-h-screen bg-surface flex items-center justify-center">
+      <span className="material-symbols-outlined animate-spin text-4xl text-outline">progress_activity</span>
+    </div>
+  )
+
+  if (isAuthenticated) return <Navigate to="/dashboard" replace />
+
   const currentLang = LANGUAGES.find(l => l.code === language)
 
   async function handleSubmit(e) {
@@ -37,7 +45,7 @@ export default function Login() {
       const { mustChangePassword } = await signIn(login, password)
       navigate(mustChangePassword ? '/secure-account' : '/dashboard')
     } catch (err) {
-      setError(t.errorCredentials)
+      setError(err.code === 'unauthorized_role' ? t.errorUnauthorizedRole : t.errorCredentials)
     } finally {
       setLoading(false)
     }
