@@ -1,23 +1,18 @@
 import { useState } from 'react'
-
-const MONTH_NAMES = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
-]
+import { useT } from '../../../i18n/useT'
 
 function buildMonthList() {
   const now = new Date()
-  const currentYear = now.getFullYear()
-  const currentMonth = now.getMonth() + 1 // 1-based
-
   const months = []
-  for (let m = 1; m <= currentMonth; m++) {
-    months.push({ month: m, year: currentYear })
+  for (let i = 0; i < 3; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
+    months.push({ month: d.getMonth() + 1, year: d.getFullYear() })
   }
-  return months.reverse() // most recent first
+  return months
 }
 
 export default function Modal({ isOpen, onClose, selectedMonth, selectedYear, onConfirm }) {
+  const t = useT('modal')
   const [pending, setPending] = useState({ month: selectedMonth, year: selectedYear })
   const months = buildMonthList()
 
@@ -39,8 +34,8 @@ export default function Modal({ isOpen, onClose, selectedMonth, selectedYear, on
       >
         <div className="px-8 pt-8 pb-4 flex justify-between items-center">
           <div>
-            <h2 className="text-xl font-bold tracking-tight text-on-surface">Select Period</h2>
-            <p className="text-[10px] text-outline uppercase tracking-widest mt-1">Fiscal Year {pending.year}</p>
+            <h2 className="text-xl font-bold tracking-tight text-on-surface">{t.selectPeriod}</h2>
+            <p className="text-[10px] text-outline uppercase tracking-widest mt-1">{t.fiscalYear} {pending.year}</p>
           </div>
           <button
             onClick={onClose}
@@ -50,7 +45,7 @@ export default function Modal({ isOpen, onClose, selectedMonth, selectedYear, on
           </button>
         </div>
 
-        <div className="px-4 pb-4 max-h-[400px] overflow-y-auto">
+        <div className="px-4 pb-4">
           <div className="space-y-1">
             {months.map(({ month, year }) => {
               const isSelected = month === pending.month && year === pending.year
@@ -67,8 +62,7 @@ export default function Modal({ isOpen, onClose, selectedMonth, selectedYear, on
                   {isSelected ? (
                     <>
                       <div className="relative z-10 flex flex-col items-start">
-                        <span className="font-bold">{MONTH_NAMES[month - 1]} {year}</span>
-                        {/* <span className="text-[10px] uppercase tracking-widest opacity-80">Current Selection</span> */}
+                        <span className="font-bold">{t.months[month - 1]} {year}</span>
                       </div>
                       <span className="material-symbols-outlined relative z-10" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
                       <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none"></div>
@@ -76,7 +70,7 @@ export default function Modal({ isOpen, onClose, selectedMonth, selectedYear, on
                   ) : (
                     <>
                       <span className="font-medium text-on-surface-variant group-hover:text-on-surface">
-                        {MONTH_NAMES[month - 1]} {year}
+                        {t.months[month - 1]} {year}
                       </span>
                       <span className="material-symbols-outlined text-surface-container-highest">chevron_right</span>
                     </>
@@ -92,7 +86,7 @@ export default function Modal({ isOpen, onClose, selectedMonth, selectedYear, on
             onClick={handleConfirm}
             className="w-full bg-surface-container-high py-4 rounded-xl font-bold text-primary active:scale-95 transition-all"
           >
-            Confirm
+            {t.confirm}
           </button>
         </div>
       </div>

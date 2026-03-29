@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import TopBar from '../../components/layout/TopBar/TopBar'
 import BottomNav from '../../components/layout/BottomNav/BottomNav'
-import Modal from '../../components/common/Modal/modal'
 import { useAuth } from '../../context/AuthContext'
+import { useLanguage } from '../../context/LanguageContext'
+import { useT } from '../../i18n/useT'
 import { getDailySales } from '../../services/api'
 import { formatCurrency } from '../../utils/formatters'
 import MonthSelector from './MonthSelector'
@@ -21,33 +23,32 @@ function formatTime(dateStr) {
     return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })
 }
 
-function formatStatus(status) {
-    if (!status) return ''
-    return status.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
-}
-
-function mapTransactions(salesData) {
+function mapTransactions(salesData, lang, t) {
     if (!salesData) return []
     const orders = (salesData.orders ?? []).map(o => ({
         id: `ord-${o.id}`,
+        rawId: o.id,
+        type: 'order',
         icon: 'shopping_bag',
         iconBg: 'bg-secondary-container',
         iconColor: 'text-on-secondary-container',
-        title: o.client_name ?? 'Order',
+        title: o.client_name ?? t.orderFallback,
         subtitle: `#${o.delivery_number ?? o.id} • ${formatTime(o.deal_datetime)}`,
-        badge: o.status_label?.en ?? o.status,
+        badge: o.status_label?.[lang] ?? o.status,
         badgeStyle: 'bg-secondary-container/30 text-on-secondary-container',
         amount: `+${formatCurrency(o.total_amount, '')}`,
         amountColor: 'text-secondary',
     }))
     const returns = (salesData.returns ?? []).map(r => ({
         id: `ret-${r.id}`,
+        rawId: r.id,
+        type: 'return',
         icon: 'assignment_return',
         iconBg: 'bg-error-container',
         iconColor: 'text-on-error-container',
-        title: r.client_name ?? 'Return',
+        title: r.client_name ?? t.returnFallback,
         subtitle: `#${r.delivery_number ?? r.id} • ${formatTime(r.deal_datetime)}`,
-        badge: r.status_label?.en ?? r.status,
+        badge: r.status_label?.[lang] ?? r.status,
         badgeStyle: 'bg-outline/10 text-outline',
         amount: `-${formatCurrency(r.total_amount, '')}`,
         amountColor: 'text-error',
@@ -56,9 +57,10 @@ function mapTransactions(salesData) {
 }
 
 export default function Sales() {
-    const { employee, period, setPeriod, periodLabel, workplaceId } = useAuth()
-    const [showModal, setShowModal] = useState(false)
-
+    const { employee, workplaceId } = useAuth()
+    const { language } = useLanguage()
+    const t = useT('sales')
+    const navigate = useNavigate()
     const today = new Date()
     const [calMonth, setCalMonth] = useState(today.getMonth() + 1)
     const [calYear, setCalYear] = useState(today.getFullYear())
@@ -66,7 +68,12 @@ export default function Sales() {
 
     const [salesData, setSalesData] = useState(null)
     const [salesLoading, setSalesLoading] = useState(false)
-    const [selectedTransaction, setSelectedTransaction] = useState(null)
+    const [selectedReturn, setSelectedReturn] = useState(null)
+
+    function handleSelect(tx) {
+        if (tx.type === 'order') navigate(`/order/${tx.rawId}`)
+        else setSelectedReturn(tx)
+    }
 
     const dateStr = toDateStr(calYear, calMonth, selectedDay)
 
@@ -90,30 +97,17 @@ export default function Sales() {
         else setCalMonth(m => m + 1)
     }
 
-    const transactions = mapTransactions(salesData)
+    const transactions = mapTransactions(salesData, language, t)
     const ordersTotal = salesData?.orders_amount ?? 0
     const returnsTotal = salesData?.returns_amount ?? 0
     const netRevenue = salesData?.net_sales ?? 0
 
-    const selectedDateLabel = new Date(calYear, calMonth - 1, selectedDay)
-        .toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
-
     return (
         <div className="min-h-screen bg-surface pb-32">
             <TopBar
-                title="Sales Journal"
+                title={t.title}
                 subtitle={employee?.name}
                 avatarUrl={employee?.avatarUrl}
-                period={periodLabel}
-                onPeriodClick={() => setShowModal(true)}
-            />
-
-            <Modal
-                isOpen={showModal}
-                onClose={() => setShowModal(false)}
-                selectedMonth={period?.month}
-                selectedYear={period?.year}
-                onConfirm={(month, year) => setPeriod({ month, year })}
             />
 
             <main className="pt-4 pb-24 px-4 max-w-lg mx-auto">
@@ -137,27 +131,26 @@ export default function Sales() {
                 ) : salesData ? (
                     <>
                         <DailySummary
-                            date={selectedDateLabel}
                             netRevenue={netRevenue}
                             totalOrders={ordersTotal}
                             totalReturns={returnsTotal}
                         />
                         {transactions.length > 0
-                            ? <TransactionList transactions={transactions} onSelect={setSelectedTransaction} />
-                            : <p className="text-center text-outline text-sm py-8">No transactions for this day</p>
+                            ? <TransactionList transactions={transactions} onSelect={handleSelect} />
+                            : <p className="text-center text-outline text-sm py-8">{t.noTransactions}</p>
                         }
                     </>
                 ) : (
-                    <p className="text-center text-outline text-sm py-8">No data available</p>
+                    <p className="text-center text-outline text-sm py-8">{t.noData}</p>
                 )}
             </main>
 
             <BottomNav />
 
-            {selectedTransaction && (
+            {selectedReturn && (
                 <TransactionDetail
-                    transaction={selectedTransaction}
-                    onClose={() => setSelectedTransaction(null)}
+                    transaction={selectedReturn}
+                    onClose={() => setSelectedReturn(null)}
                 />
             )}
         </div>

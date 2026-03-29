@@ -30,6 +30,7 @@ export function formatCompact(value) {
  * Format a { month, year } period object into a human-readable label
  * @param {{ month: number, year: number }} period
  */
-export function formatPeriod({ month, year }) {
+export function formatPeriod({ month, year }, monthNames) {
+  if (monthNames) return `${monthNames[month - 1]} ${year}`
   return new Date(year, month - 1).toLocaleString('en', { month: 'long', year: 'numeric' })
 }

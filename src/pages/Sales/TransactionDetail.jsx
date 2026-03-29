@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { getOrderDetail, getReturnDetail } from '../../services/api'
 import { formatCurrency } from '../../utils/formatters'
+import { useT } from '../../i18n/useT'
 
 function formatDatetime(str) {
     if (!str) return ''
@@ -11,6 +12,7 @@ function formatDatetime(str) {
 }
 
 export default function TransactionDetail({ transaction, onClose }) {
+    const t = useT('sales')
     const [detail, setDetail] = useState(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(false)
@@ -66,7 +68,7 @@ export default function TransactionDetail({ transaction, onClose }) {
                             <span className="material-symbols-outlined animate-spin text-3xl text-outline">progress_activity</span>
                         </div>
                     ) : error ? (
-                        <p className="text-center text-error text-sm py-8">Failed to load details</p>
+                        <p className="text-center text-error text-sm py-8">{t.failedToLoad}</p>
                     ) : (
                         <>
                             {/* Status + date */}
@@ -80,7 +82,7 @@ export default function TransactionDetail({ transaction, onClose }) {
                             {/* Products */}
                             {items.length > 0 && (
                                 <div className="space-y-2">
-                                    <p className="text-[10px] font-bold uppercase tracking-widest text-outline">Products</p>
+                                    <p className="text-[10px] font-bold uppercase tracking-widest text-outline">{t.products}</p>
                                     <div className="space-y-2">
                                         {items.map((item, i) => (
                                             <div key={i} className="bg-surface-container-low rounded-xl p-3 flex items-center justify-between gap-3">
@@ -101,7 +103,7 @@ export default function TransactionDetail({ transaction, onClose }) {
 
                             {/* Total */}
                             <div className={`rounded-xl p-4 flex items-center justify-between ${isReturn ? 'bg-error/10' : 'bg-secondary/10'}`}>
-                                <span className="text-sm font-bold uppercase tracking-wider text-on-surface">Total</span>
+                                <span className="text-sm font-bold uppercase tracking-wider text-on-surface">{t.total}</span>
                                 <span className={`text-lg font-extrabold tracking-tight ${isReturn ? 'text-error' : 'text-secondary'}`}>
                                     {isReturn ? '−' : '+'}{formatCurrency(totalAmount, '')} UZS
                                 </span>
