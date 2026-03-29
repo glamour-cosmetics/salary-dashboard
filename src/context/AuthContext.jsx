@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import { formatPeriod } from '../utils/formatters'
-import { apiLogin, getProfile, getDashboard, setTokens, clearTokens } from '../services/api'
+import { apiLogin, getProfile, getDashboard, setTokens, clearTokens, initTokens } from '../services/api'
 import { useLanguage } from './LanguageContext'
 import translations from '../i18n/translations'
 
@@ -61,14 +61,40 @@ function getDisplayName(profile) {
 
 export function AuthProvider({ children }) {
   const { language } = useLanguage()
-  const stored = loadProfileFromStorage()
 
   const now = new Date()
-  const [profile, setProfile] = useState(stored?.profile ?? null)
-  const [workplaceId, setWorkplaceId] = useState(stored?.workplaceId ?? null)
-  const [userId, setUserId] = useState(stored?.userId ?? null)
+  const [initializing, setInitializing] = useState(true)
+  const [profile, setProfile] = useState(null)
+  const [workplaceId, setWorkplaceId] = useState(null)
+  const [userId, setUserId] = useState(null)
   const [mustChangePassword, setMustChangePassword] = useState(false)
   const [period, setPeriod] = useState({ month: now.getMonth() + 1, year: now.getFullYear() })
+
+  // On mount: load tokens from CloudStorage, then restore profile from
+  // localStorage (fast path) or re-fetch from API (after iOS WebView wipe).
+  useEffect(() => {
+    initTokens().then(async () => {
+      const stored = loadProfileFromStorage()
+      if (stored) {
+        setProfile(stored.profile)
+        setWorkplaceId(stored.workplaceId)
+        setUserId(stored.userId)
+        setMustChangePassword(stored.profile.must_change_password ?? false)
+      } else {
+        try {
+          const profileData = await getProfile()
+          const { userId: uid, workplaceId: wid } = saveProfileToStorage(profileData)
+          setProfile(profileData)
+          setUserId(uid)
+          setWorkplaceId(wid)
+          setMustChangePassword(profileData.must_change_password ?? false)
+        } catch {
+          // No valid tokens — user must log in
+        }
+      }
+      setInitializing(false)
+    })
+  }, [])
   const [dashboardData, setDashboardData] = useState(null)
   const [dashboardLoading, setDashboardLoading] = useState(false)
 
@@ -121,6 +147,14 @@ export function AuthProvider({ children }) {
     setTokens(tokens.access, tokens.refresh)
 
     const profileData = await getProfile()
+
+    if ((profileData.workplace?.role_type ?? '') !== 'SALES_MANAGER') {
+      clearTokens()
+      const err = new Error('unauthorized_role')
+      err.code = 'unauthorized_role'
+      throw err
+    }
+
     const { userId: uid, workplaceId: wid } = saveProfileToStorage(profileData)
 
     setProfile(profileData)
@@ -176,6 +210,7 @@ export function AuthProvider({ children }) {
       userId,
       workplaceId,
       isAuthenticated,
+      initializing,
       mustChangePassword,
       period,
       setPeriod,

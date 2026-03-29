@@ -11,7 +11,6 @@ import MonthSelector from './MonthSelector'
 import SalesCalendar from './SalesCalendar'
 import DailySummary from './DailySummary'
 import TransactionList from './TransactionList'
-import TransactionDetail from './TransactionDetail'
 
 function toDateStr(year, month, day) {
     return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
@@ -68,11 +67,10 @@ export default function Sales() {
 
     const [salesData, setSalesData] = useState(null)
     const [salesLoading, setSalesLoading] = useState(false)
-    const [selectedReturn, setSelectedReturn] = useState(null)
 
     function handleSelect(tx) {
         if (tx.type === 'order') navigate(`/order/${tx.rawId}`)
-        else setSelectedReturn(tx)
+        else navigate(`/return/${tx.rawId}`)
     }
 
     const dateStr = toDateStr(calYear, calMonth, selectedDay)
@@ -146,13 +144,6 @@ export default function Sales() {
             </main>
 
             <BottomNav />
-
-            {selectedReturn && (
-                <TransactionDetail
-                    transaction={selectedReturn}
-                    onClose={() => setSelectedReturn(null)}
-                />
-            )}
         </div>
     )
 }

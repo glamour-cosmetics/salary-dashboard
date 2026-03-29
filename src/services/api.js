@@ -3,21 +3,48 @@ const MOCK = import.meta.env.VITE_MOCK === 'true'
 // ---------------------------------------------------------------------------
 // Token management — module-level so auto-refresh can update without context
 // ---------------------------------------------------------------------------
-let _access = localStorage.getItem('access_token')
-let _refresh = localStorage.getItem('refresh_token')
+let _access = null
+let _refresh = null
+
+// CloudStorage helpers — use Telegram's server-side KV when available,
+// fall back to localStorage (dev / non-Telegram browsers).
+function csGet(key) {
+  return new Promise((resolve) => {
+    const cs = window.Telegram?.WebApp?.CloudStorage
+    if (!cs) { resolve(localStorage.getItem(key)); return }
+    cs.getItem(key, (err, value) => resolve(err ? null : (value || null)))
+  })
+}
+
+function csSet(key, value) {
+  const cs = window.Telegram?.WebApp?.CloudStorage
+  if (!cs) { localStorage.setItem(key, value); return }
+  cs.setItem(key, value)
+}
+
+function csRemove(keys) {
+  const cs = window.Telegram?.WebApp?.CloudStorage
+  if (!cs) { keys.forEach(k => localStorage.removeItem(k)); return }
+  cs.removeItems(keys)
+}
+
+/** Called once at app startup — loads persisted tokens into module memory. */
+export async function initTokens() {
+  _access = await csGet('access_token')
+  _refresh = await csGet('refresh_token')
+}
 
 export function setTokens(access, refresh) {
   _access = access
   _refresh = refresh
-  localStorage.setItem('access_token', access)
-  if (refresh != null) localStorage.setItem('refresh_token', refresh)
+  csSet('access_token', access)
+  if (refresh != null) csSet('refresh_token', refresh)
 }
 
 export function clearTokens() {
   _access = null
   _refresh = null
-  localStorage.removeItem('access_token')
-  localStorage.removeItem('refresh_token')
+  csRemove(['access_token', 'refresh_token'])
 }
 
 async function tryRefresh() {
