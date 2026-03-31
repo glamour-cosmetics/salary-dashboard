@@ -5,7 +5,7 @@ import BottomNav from '../../components/layout/BottomNav/BottomNav'
 import { useAuth } from '../../context/AuthContext'
 import { useLanguage } from '../../context/LanguageContext'
 import { useT } from '../../i18n/useT'
-import { getDailySales } from '../../services/api'
+import { getDailySales, getVisitSummary } from '../../services/api'
 import { formatCurrency } from '../../utils/formatters'
 import MonthSelector from './MonthSelector'
 import SalesCalendar from './SalesCalendar'
@@ -66,6 +66,7 @@ export default function Sales() {
     const [selectedDay, setSelectedDay] = useState(today.getDate())
 
     const [salesData, setSalesData] = useState(null)
+    const [visitData, setVisitData] = useState(null)
     const [salesLoading, setSalesLoading] = useState(false)
 
     function handleSelect(tx) {
@@ -79,10 +80,14 @@ export default function Sales() {
         if (!workplaceId) return
         setSalesLoading(true)
         setSalesData(null)
-        getDailySales(workplaceId, dateStr)
-            .then(res => setSalesData(res.data ?? res))
-            .catch(() => setSalesData(null))
-            .finally(() => setSalesLoading(false))
+        setVisitData(null)
+        Promise.all([
+            getDailySales(workplaceId, dateStr).then(res => res.data ?? res).catch(() => null),
+            getVisitSummary(dateStr).catch(() => null),
+        ]).then(([sales, visit]) => {
+            setSalesData(sales)
+            setVisitData(visit)
+        }).finally(() => setSalesLoading(false))
     }, [workplaceId, dateStr])
 
     function prevMonth() {
@@ -131,11 +136,14 @@ export default function Sales() {
                 ) : salesData ? (
                     <>
                         <DailySummary
+                            date={dateStr}
                             netRevenue={netRevenue}
                             totalOrders={ordersTotal}
                             totalReturns={returnsTotal}
                             dailyPlan={dailyPlan}
                             dailyAchievement={dailyAchievement}
+                            firstVisit={visitData?.first_visit ?? null}
+                            lastVisit={visitData?.last_visit ?? null}
                         />
                         {transactions.length > 0
                             ? <TransactionList transactions={transactions} onSelect={handleSelect} />
