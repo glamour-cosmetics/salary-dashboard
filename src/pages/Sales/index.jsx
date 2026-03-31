@@ -99,6 +99,8 @@ export default function Sales() {
     const ordersTotal = salesData?.orders_amount ?? 0
     const returnsTotal = salesData?.returns_amount ?? 0
     const netRevenue = salesData?.net_sales ?? 0
+    const dailyPlan = salesData?.daily_sales_plan ?? 0
+    const dailyAchievement = salesData?.daily_plan_achievement ?? 0
 
     return (
         <div className="min-h-screen bg-surface pb-32">
@@ -132,6 +134,8 @@ export default function Sales() {
                             netRevenue={netRevenue}
                             totalOrders={ordersTotal}
                             totalReturns={returnsTotal}
+                            dailyPlan={dailyPlan}
+                            dailyAchievement={dailyAchievement}
                         />
                         {transactions.length > 0
                             ? <TransactionList transactions={transactions} onSelect={handleSelect} />

@@ -56,12 +56,13 @@ export default function Route() {
     const t = useT('route')
 
     const [activeDay, setActiveDay] = useState(todayChip)
-    const [likelyToOrder, setLikelyToOrder] = useState(true)
+    const [likelyToOrder] = useState(false)
     const [sortBy, setSortBy] = useState('days_since_last_order')
     const [sortDir, setSortDir] = useState('Desc')
 
     const [clients, setClients] = useState([])
     const [workplaceName, setWorkplaceName] = useState('')
+    const [totalCount, setTotalCount] = useState(0)
     const [page, setPage] = useState(1)
     const [totalPages, setTotalPages] = useState(1)
     const [loading, setLoading] = useState(false)
@@ -79,6 +80,7 @@ export default function Route() {
             .then(res => {
                 setWorkplaceName(res.workplace_name ?? '')
                 setTotalPages(res.total_pages ?? 1)
+                setTotalCount(res.count ?? res.total_count ?? 0)
                 setClients((res.data ?? []).map(c => mapClient(c, weekday)))
             })
             .catch(err => setError(err.message ?? 'Failed to load clients'))
@@ -118,13 +120,13 @@ export default function Route() {
             <main className="pt-4 px-4 max-w-2xl mx-auto">
                 <RouteHeader
                     workplace={workplaceName}
-                    clientCount={clients.length}
+                    clientCount={totalCount}
                 />
 
                 <FilterBar
                     date={formatDate()}
                     likelyToOrder={likelyToOrder}
-                    onToggleLikely={() => setLikelyToOrder(v => !v)}
+                    onToggleLikely={() => {}}
                     activeDay={activeDay}
                     onDaySelect={setActiveDay}
                 />

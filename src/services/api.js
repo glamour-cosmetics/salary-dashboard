@@ -8,22 +8,24 @@ let _refresh = null
 
 // CloudStorage helpers — use Telegram's server-side KV when available,
 // fall back to localStorage (dev / non-Telegram browsers).
+const USE_CLOUD_STORAGE = import.meta.env.VITE_USE_CLOUD_STORAGE !== 'false'
+
 function csGet(key) {
   return new Promise((resolve) => {
-    const cs = window.Telegram?.WebApp?.CloudStorage
+    const cs = USE_CLOUD_STORAGE && window.Telegram?.WebApp?.CloudStorage
     if (!cs) { resolve(localStorage.getItem(key)); return }
     cs.getItem(key, (err, value) => resolve(err ? null : (value || null)))
   })
 }
 
 function csSet(key, value) {
-  const cs = window.Telegram?.WebApp?.CloudStorage
+  const cs = USE_CLOUD_STORAGE && window.Telegram?.WebApp?.CloudStorage
   if (!cs) { localStorage.setItem(key, value); return }
   cs.setItem(key, value)
 }
 
 function csRemove(keys) {
-  const cs = window.Telegram?.WebApp?.CloudStorage
+  const cs = USE_CLOUD_STORAGE && window.Telegram?.WebApp?.CloudStorage
   if (!cs) { keys.forEach(k => localStorage.removeItem(k)); return }
   cs.removeItems(keys)
 }
@@ -208,6 +210,12 @@ function transformDashboard(raw) {
         nextGoalBonus: toFloat(raw.next_bonus_amount),
       },
       belowThreshold: raw.below_threshold ?? false,
+      threshold: raw.salary_plan_config?.threshold ?? 80,
+    },
+    estimated: {
+      salary:      toFloat(raw.estimated_salary),
+      achievement: toFloat(raw.estimated_overall_achievement),
+      components:  buildSalaryComponents(raw.estimated_breakdown ?? {}),
     },
     // raw response kept for any page that needs unmodified fields
     _raw: raw,
