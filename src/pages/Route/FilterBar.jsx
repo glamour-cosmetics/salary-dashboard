@@ -11,7 +11,7 @@ export default function FilterBar({ date, likelyToOrder, onToggleLikely, activeD
                     <span className="text-sm font-medium">{date}</span>
                     <span className="material-symbols-outlined text-primary text-xl">calendar_today</span>
                 </div>
-                <button
+                {/* <button
                     onClick={onToggleLikely}
                     className="bg-surface-container-low p-3 rounded-xl flex items-center justify-between"
                 >
@@ -19,7 +19,7 @@ export default function FilterBar({ date, likelyToOrder, onToggleLikely, activeD
                     <div className={`w-10 h-5 rounded-full relative flex items-center px-1 transition-colors ${likelyToOrder ? 'bg-secondary' : 'bg-outline-variant'}`}>
                         <div className={`w-3.5 h-3.5 bg-white rounded-full transition-all ${likelyToOrder ? 'ml-auto' : 'mr-auto'}`} />
                     </div>
-                </button>
+                </button> */}
             </div>
             <div className="grid grid-cols-7 gap-1.5">
                 {WEEKDAY_KEYS.map((key, i) => (

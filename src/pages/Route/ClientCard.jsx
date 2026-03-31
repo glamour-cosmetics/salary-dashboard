@@ -59,8 +59,8 @@ export default function ClientCard({ client }) {
 
                 <div className="grid grid-cols-3 gap-2 mb-4">
                     <StatCell label={t.thisMonth} value={thisMonth} />
-                    <StatCell label={t.avgOrder} value={avgOrder} />
-                    <StatCell label={t.plan} value={plan} accent />
+                    {/* <StatCell label={t.avgOrder} value={avgOrder} /> */}
+                    {/* <StatCell label={t.plan} value={plan} accent /> */}
                 </div>
 
                 <div className="flex justify-end">
