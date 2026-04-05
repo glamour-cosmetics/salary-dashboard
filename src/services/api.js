@@ -235,6 +235,13 @@ export function getDailySales(workplaceId, date) {
   return request(`/smartupx/sales/daily/?${params}`)
 }
 
+/** GET /smartupx/sales-manager-visit/ */
+export async function getVisitSummary(date) {
+  const params = new URLSearchParams({ visit_date_from: date, visit_date_to: date })
+  const res = await request(`/smartupx/sales-manager-visit/?${params}`)
+  return (res.results ?? [])[0] ?? null
+}
+
 /** GET /smartupx/sales/order/{id}/ */
 export async function getOrderDetail(orderId) {
   const res = await request(`/smartupx/sales/order/${orderId}/`)
