@@ -13,6 +13,7 @@ import Settings from './pages/Settings/Settings'
 import Feedback from './pages/Feedback/Feedback'
 import Sales from './pages/Sales'
 import RoutePage from './pages/Route'
+import Visits from './pages/Visits'
 import OrderDetail from './pages/OrderDetail'
 import ReturnDetail from './pages/ReturnDetail'
 
@@ -30,6 +31,7 @@ export default function App() {
             <Route path="/salary" element={<ProtectedRoute><Salary /></ProtectedRoute>} />
             <Route path="/kpi" element={<ProtectedRoute><KPI /></ProtectedRoute>} />
             <Route path="/route" element={<ProtectedRoute><RoutePage /></ProtectedRoute>} />
+            <Route path="/visits" element={<ProtectedRoute><Visits /></ProtectedRoute>} />
             <Route path="/order/:id" element={<ProtectedRoute><OrderDetail /></ProtectedRoute>} />
             <Route path="/return/:id" element={<ProtectedRoute><ReturnDetail /></ProtectedRoute>} />
             <Route path="/kpi-detail" element={<ProtectedRoute><KPI /></ProtectedRoute>} />

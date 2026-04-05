@@ -242,6 +242,15 @@ export async function getVisitSummary(date) {
   return (res.results ?? [])[0] ?? null
 }
 
+/** GET /smartupx/visit/ — date must be YYYY-MM-DD */
+export async function getVisitList(responsibleId, date) {
+  const [y, m, d] = date.split('-')
+  const fmt = `${d}.${m}.${y}`
+  const params = new URLSearchParams({ responsible: responsibleId, started_at_from: fmt, started_at_to: fmt })
+  const res = await request(`/smartupx/visit/?${params}`)
+  return res.results ?? []
+}
+
 /** GET /smartupx/sales/order/{id}/ */
 export async function getOrderDetail(orderId) {
   const res = await request(`/smartupx/sales/order/${orderId}/`)

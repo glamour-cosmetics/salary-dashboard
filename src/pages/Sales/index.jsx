@@ -142,8 +142,9 @@ export default function Sales() {
                             totalReturns={returnsTotal}
                             dailyPlan={dailyPlan}
                             dailyAchievement={dailyAchievement}
-                            firstVisit={visitData?.first_visit ?? null}
-                            lastVisit={visitData?.last_visit ?? null}
+                            firstVisit={visitData?.first_visit_by_plan ?? null}
+                            lastVisit={visitData?.last_visit_by_plan ?? null}
+                            onViewVisits={() => navigate('/visits', { state: { date: dateStr } })}
                         />
                         {transactions.length > 0
                             ? <TransactionList transactions={transactions} onSelect={handleSelect} />
