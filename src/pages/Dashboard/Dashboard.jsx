@@ -123,33 +123,6 @@ export default function Dashboard() {
 					})()}
 
 
-
-
-
-					
-					{/* Total salary hero */}
-					{/* <section className="space-y-2">
-						<h2 className="text-[11px] uppercase tracking-widest font-semibold text-outline">{t.totalSalaryLabel}</h2>
-						<div className="bg-surface-container-lowest p-8 rounded-xl shadow-lg relative overflow-hidden">
-							<div className="absolute -right-10 -top-10 w-40 h-40 bg-white/5 rounded-full blur-3xl"></div>
-							<div className="relative z-10 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-								<div>
-									<div className="flex items-baseline gap-2">
-										<span className="text-3xl md:text-5xl font-extrabold tracking-tighter">
-											{formatCurrency(salary.total, '')}
-										</span>
-										<span className="text-lg md:text-2xl font-medium text-outline">{salary.currency}</span>
-									</div>
-									<p className="text-outline text-sm mt-1 font-medium">{t.salarySubtitle}</p>
-								</div>
-								<div className="bg-outline/10 backdrop-blur-md rounded-lg px-4 py-2 border border-outline/50 inline-flex items-center gap-2 self-start md:self-auto">
-									<span className={`material-symbols-outlined text-sm ${kpi.overplan > 0 ? `text-secondary-fixed` : `text-red-500`} `} style={{ fontVariationSettings: "'FILL' 1" }}>{kpi.overplan > 0 ? `trending_up` : `trending_down`}</span>
-									<span className="text-xs tracking-tight font-bold">{t[salary.trendKey]}</span>
-								</div>
-							</div>
-						</div>
-					</section> */}
-
 					{/* <section className="bg-surface-container-lowest p-6 rounded-xl space-y-6">
 						<div className="flex justify-between items-center">
 							<h2 className="text-sm font-bold uppercase tracking-wider text-on-surface-variant">{t.planAchievement}</h2>
@@ -178,7 +151,9 @@ export default function Dashboard() {
 						</div>
 					</section> */}
 
-				{(() => {
+
+
+					{(() => {
 						const circleR = 56
 						const circleC = 2 * Math.PI * circleR
 						const currentOffset = circleC - (Math.min(planPct, 100) / 100) * circleC
@@ -358,6 +333,30 @@ export default function Dashboard() {
 							<span className="material-symbols-outlined text-sm">chevron_right</span>
 						</button>
 					</section>
+
+					{/* Total salary hero */}
+					<section className="space-y-2">
+						<h2 className="text-[11px] uppercase tracking-widest font-semibold text-outline">{t.totalSalaryLabel}</h2>
+						<div className="bg-surface-container-lowest p-8 rounded-xl shadow-lg relative overflow-hidden">
+							<div className="absolute -right-10 -top-10 w-40 h-40 bg-white/5 rounded-full blur-3xl"></div>
+							<div className="relative z-10 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+								<div>
+									<div className="flex items-baseline gap-2">
+										<span className="text-3xl md:text-5xl font-extrabold tracking-tighter">
+											{formatCurrency(salary.total, '')}
+										</span>
+										<span className="text-lg md:text-2xl font-medium text-outline">{salary.currency}</span>
+									</div>
+									<p className="text-outline text-sm mt-1 font-medium">{t.salarySubtitle}</p>
+								</div>
+								<div className="bg-outline/10 backdrop-blur-md rounded-lg px-4 py-2 border border-outline/50 inline-flex items-center gap-2 self-start md:self-auto">
+									<span className={`material-symbols-outlined text-sm ${kpi.overplan > 0 ? `text-secondary-fixed` : `text-red-500`} `} style={{ fontVariationSettings: "'FILL' 1" }}>{kpi.overplan > 0 ? `trending_up` : `trending_down`}</span>
+									<span className="text-xs tracking-tight font-bold">{t[salary.trendKey]}</span>
+								</div>
+							</div>
+						</div>
+					</section>
+
 
 					{/* Earnings breakdown */}
 					<section className="space-y-4">

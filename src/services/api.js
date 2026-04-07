@@ -217,6 +217,44 @@ function transformDashboard(raw) {
       achievement: toFloat(raw.estimated_overall_achievement),
       components:  buildSalaryComponents(raw.estimated_breakdown ?? {}),
     },
+    brandKpi: {
+      items: (raw.brand_kpi_data?.brand_kpi_items ?? []).map(item => ({
+        id:          item.brand_id,
+        name:        item.brand_name,
+        metricType:  item.metric_type,
+        plan:        toFloat(item.plan_value),
+        actual:      toFloat(item.actual_value),
+        achievement: toFloat(item.achievement),
+        bonus:       toFloat(item.bonus),
+        config: {
+          bonusPool:            toFloat(item.config?.bonus_pool),
+          threshold:            item.config?.threshold_percent ?? 80,
+          step:                 item.config?.step_percent ?? 5,
+          overachievementBonus: toFloat(item.config?.overachievement_bonus),
+          overachievementStep:  item.config?.overachievement_step_percent ?? 10,
+        },
+      })),
+      totalBonus: toFloat(raw.brand_kpi_data?.brand_kpi_bonus),
+    },
+    productKpi: {
+      items: (raw.product_kpi_data?.product_kpi_items ?? []).map(item => ({
+        id:          item.product_id,
+        name:        item.product_name,
+        metricType:  item.metric_type,
+        plan:        toFloat(item.plan_value),
+        actual:      toFloat(item.actual_value),
+        achievement: toFloat(item.achievement),
+        bonus:       toFloat(item.bonus),
+        config: {
+          bonusPool:            toFloat(item.config?.bonus_pool),
+          threshold:            item.config?.threshold_percent ?? 80,
+          step:                 item.config?.step_percent ?? 5,
+          overachievementBonus: toFloat(item.config?.overachievement_bonus),
+          overachievementStep:  item.config?.overachievement_step_percent ?? 10,
+        },
+      })),
+      totalBonus: toFloat(raw.product_kpi_data?.product_kpi_bonus),
+    },
     // raw response kept for any page that needs unmodified fields
     _raw: raw,
   }

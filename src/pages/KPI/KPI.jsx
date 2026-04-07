@@ -6,6 +6,57 @@ import { useAuth } from '../../context/AuthContext'
 import { formatCurrency, formatPercent } from '../../utils/formatters'
 import { useT } from '../../i18n/useT'
 
+function KpiItemCard({ item, currency, t }) {
+  const pct = Math.min(item.achievement, 100)
+  const achieved = item.achievement >= item.config.threshold
+  return (
+    <div className="bg-white rounded-xl p-4 space-y-3">
+      <div className="flex items-start justify-between gap-2">
+        <span className="text-sm font-bold text-on-surface leading-tight">{item.name}</span>
+        <span className={`shrink-0 text-sm font-extrabold ${achieved ? 'text-secondary' : 'text-primary'}`}>
+          {formatPercent(item.achievement)}
+        </span>
+      </div>
+
+      <div className="w-full h-2 bg-surface-container-highest rounded-full overflow-hidden">
+        <div
+          className={`h-full rounded-full transition-all ${achieved ? 'bg-secondary' : 'bg-primary'}`}
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+
+      <div className="grid grid-cols-3 gap-2">
+        <div>
+          <p className="text-[9px] uppercase tracking-wider text-outline mb-0.5">{t.plan}</p>
+          <p className="text-xs font-bold text-on-surface">{formatCurrency(item.plan, '')}</p>
+          <p className="text-[9px] text-outline">{currency}</p>
+        </div>
+        <div>
+          <p className="text-[9px] uppercase tracking-wider text-outline mb-0.5">{t.actual}</p>
+          <p className="text-xs font-bold text-on-surface">{formatCurrency(item.actual, '')}</p>
+          <p className="text-[9px] text-outline">{currency}</p>
+        </div>
+        <div>
+          <p className="text-[9px] uppercase tracking-wider text-outline mb-0.5">{t.bonusEarned}</p>
+          <p className={`text-xs font-bold ${item.bonus > 0 ? 'text-secondary' : 'text-outline'}`}>
+            {formatCurrency(item.bonus, '')}
+          </p>
+          <p className="text-[9px] text-outline">{currency}</p>
+        </div>
+      </div>
+
+      <div className="flex gap-3 pt-1 border-t border-surface-container-high">
+        <span className="text-[9px] text-outline">
+          {t.threshold}: <span className="font-bold text-on-surface-variant">{item.config.threshold}%</span>
+        </span>
+        <span className="text-[9px] text-outline">
+          {t.bonusPool}: <span className="font-bold text-on-surface-variant">{formatCurrency(item.config.bonusPool, '')} {currency}</span>
+        </span>
+      </div>
+    </div>
+  )
+}
+
 export default function KPI() {
   const { employee, period, setPeriod, periodLabel, dashboardData, dashboardLoading } = useAuth()
   const t = useT('kpi')
@@ -13,6 +64,8 @@ export default function KPI() {
   const [showModal, setShowModal] = useState(false)
 
   const kpi = dashboardData?.kpi
+  const brandKpi = dashboardData?.brandKpi
+  const productKpi = dashboardData?.productKpi
   const currency = dashboardData?.salary?.currency ?? 'UZS'
   return (
     <div className="min-h-screen bg-surface pb-32">
@@ -97,7 +150,7 @@ export default function KPI() {
                 <div className={`bg-surface-container-lowest p-3 rounded-lg flex flex-col border-l-4 ${kpi.overplan > 0 ? 'border-secondary' : 'border-red-500'}`}>
                   <span className="text-[10px] font-semibold text-outline uppercase tracking-wider mb-1">{kpi.overplan > 0 ? t.overplan : t.shortage}</span>
                   <span className={`text-sm font-bold ${kpi.overplan > 0 ? 'text-secondary' : 'text-error'}`}>
-                    {kpi.overplan > 0 ? `+${formatCurrency(kpi.overplan, '')}` : `-${formatCurrency(kpi.sales.plan - kpi.sales.actual, '')}` }
+                    {kpi.overplan > 0 ? `+${formatCurrency(kpi.overplan, '')}` : `-${formatCurrency(kpi.sales.plan - kpi.sales.actual, '')}`}
                   </span>
                 </div>
               </div>
@@ -106,7 +159,7 @@ export default function KPI() {
 
           {/* ACB + Bonuses grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <section className="bg-surface-container-low rounded-xl p-5 flex flex-col justify-between">
+            <section className="bg-white rounded-xl p-5 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-[11px] font-semibold uppercase tracking-widest text-outline">{t.acbAchievement}</span>
@@ -129,6 +182,41 @@ export default function KPI() {
                 </div>
               </div>
             </section>
+
+
+            {/* Brand KPI */}
+            {brandKpi?.items?.length > 0 && (
+              <section>
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-[11px] font-semibold uppercase tracking-widest text-outline">{t.brandKpi}</span>
+                  {brandKpi.totalBonus > 0 && (
+                    <span className="text-xs font-bold text-secondary">{formatCurrency(brandKpi.totalBonus)}</span>
+                  )}
+                </div>
+                <div className="space-y-3">
+                  {brandKpi.items.map(item => (
+                    <KpiItemCard key={item.id} item={item} currency={currency} t={t} />
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Product KPI */}
+            {productKpi?.items?.length > 0 && (
+              <section>
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-[11px] font-semibold uppercase tracking-widest text-outline">{t.productKpi}</span>
+                  {productKpi.totalBonus > 0 && (
+                    <span className="text-xs font-bold text-secondary">{formatCurrency(productKpi.totalBonus)}</span>
+                  )}
+                </div>
+                <div className="space-y-3">
+                  {productKpi.items.map(item => (
+                    <KpiItemCard key={item.id} item={item} currency={currency} t={t} />
+                  ))}
+                </div>
+              </section>
+            )}
 
             <section className="bg-surface-container-low rounded-xl p-5 border-2 border-tertiary-fixed-dim/20 relative">
               <div className="absolute -top-3 -right-2 transform rotate-12">
@@ -159,7 +247,6 @@ export default function KPI() {
               )}
             </section>
           </div>
-
         </main>
       )}
 
