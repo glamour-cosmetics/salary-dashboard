@@ -89,11 +89,11 @@ export default function TransactionDetail({ transaction, onClose }) {
                                                 <div className="flex-1 min-w-0">
                                                     <p className="text-sm font-semibold text-on-surface truncate">{item.product_name ?? item.name}</p>
                                                     <p className="text-[10px] text-outline mt-0.5">
-                                                        {item.quantity ?? item.count ?? 1} × {formatCurrency(item.price ?? item.unit_price ?? 0, '')} UZS
+                                                        {item.quantity ?? item.count ?? 1} × {formatCurrency(item.price ?? item.unit_price ?? 0)}
                                                     </p>
                                                 </div>
                                                 <p className="shrink-0 text-sm font-bold text-on-surface">
-                                                    {formatCurrency(item.total ?? item.amount ?? (item.price * item.quantity) ?? 0, '')}
+                                                    {formatCurrency(item.total ?? item.amount ?? (item.price * item.quantity) ?? 0)}
                                                 </p>
                                             </div>
                                         ))}
@@ -105,7 +105,7 @@ export default function TransactionDetail({ transaction, onClose }) {
                             <div className={`rounded-xl p-4 flex items-center justify-between ${isReturn ? 'bg-error/10' : 'bg-secondary/10'}`}>
                                 <span className="text-sm font-bold uppercase tracking-wider text-on-surface">{t.total}</span>
                                 <span className={`text-lg font-extrabold tracking-tight ${isReturn ? 'text-error' : 'text-secondary'}`}>
-                                    {isReturn ? '−' : '+'}{formatCurrency(totalAmount, '')} UZS
+                                    {isReturn ? '−' : '+'}{formatCurrency(totalAmount)}
                                 </span>
                             </div>
                         </>

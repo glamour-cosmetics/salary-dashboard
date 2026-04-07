@@ -35,7 +35,7 @@ function mapTransactions(salesData, lang, t) {
         subtitle: `#${o.delivery_number ?? o.id} • ${formatTime(o.deal_datetime)}`,
         badge: o.status_label?.[lang] ?? o.status,
         badgeStyle: 'bg-secondary-container/30 text-on-secondary-container',
-        amount: `+${formatCurrency(o.total_amount, '')}`,
+        amount: `+${formatCurrency(o.total_amount)}`,
         amountColor: 'text-secondary',
     }))
     const returns = (salesData.returns ?? []).map(r => ({
@@ -49,7 +49,7 @@ function mapTransactions(salesData, lang, t) {
         subtitle: `#${r.delivery_number ?? r.id} • ${formatTime(r.deal_datetime)}`,
         badge: r.status_label?.[lang] ?? r.status,
         badgeStyle: 'bg-outline/10 text-outline',
-        amount: `-${formatCurrency(r.total_amount, '')}`,
+        amount: `-${formatCurrency(r.total_amount)}`,
         amountColor: 'text-error',
     }))
     return [...orders, ...returns]
