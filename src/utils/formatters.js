@@ -4,10 +4,11 @@
  * @param {string} currency
  */
 export function formatCurrency(amount, currency = 'UZS') {
-  return new Intl.NumberFormat('uz-UZ', {
+  const formatted = new Intl.NumberFormat('en-US', {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
-  }).format(amount) + ' ' + currency
+  }).format(amount).replace(/,/g, '\u00A0')
+  return currency ? formatted + '\u00A0' + currency : formatted
 }
 
 /**

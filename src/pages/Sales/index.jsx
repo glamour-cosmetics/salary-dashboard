@@ -5,7 +5,7 @@ import BottomNav from '../../components/layout/BottomNav/BottomNav'
 import { useAuth } from '../../context/AuthContext'
 import { useLanguage } from '../../context/LanguageContext'
 import { useT } from '../../i18n/useT'
-import { getDailySales } from '../../services/api'
+import { getDailySales, getVisitSummary } from '../../services/api'
 import { formatCurrency } from '../../utils/formatters'
 import MonthSelector from './MonthSelector'
 import SalesCalendar from './SalesCalendar'
@@ -35,7 +35,7 @@ function mapTransactions(salesData, lang, t) {
         subtitle: `#${o.delivery_number ?? o.id} • ${formatTime(o.deal_datetime)}`,
         badge: o.status_label?.[lang] ?? o.status,
         badgeStyle: 'bg-secondary-container/30 text-on-secondary-container',
-        amount: `+${formatCurrency(o.total_amount, '')}`,
+        amount: `+${formatCurrency(o.total_amount)}`,
         amountColor: 'text-secondary',
     }))
     const returns = (salesData.returns ?? []).map(r => ({
@@ -49,7 +49,7 @@ function mapTransactions(salesData, lang, t) {
         subtitle: `#${r.delivery_number ?? r.id} • ${formatTime(r.deal_datetime)}`,
         badge: r.status_label?.[lang] ?? r.status,
         badgeStyle: 'bg-outline/10 text-outline',
-        amount: `-${formatCurrency(r.total_amount, '')}`,
+        amount: `-${formatCurrency(r.total_amount)}`,
         amountColor: 'text-error',
     }))
     return [...orders, ...returns]
@@ -66,6 +66,7 @@ export default function Sales() {
     const [selectedDay, setSelectedDay] = useState(today.getDate())
 
     const [salesData, setSalesData] = useState(null)
+    const [visitData, setVisitData] = useState(null)
     const [salesLoading, setSalesLoading] = useState(false)
 
     function handleSelect(tx) {
@@ -79,10 +80,14 @@ export default function Sales() {
         if (!workplaceId) return
         setSalesLoading(true)
         setSalesData(null)
-        getDailySales(workplaceId, dateStr)
-            .then(res => setSalesData(res.data ?? res))
-            .catch(() => setSalesData(null))
-            .finally(() => setSalesLoading(false))
+        setVisitData(null)
+        Promise.all([
+            getDailySales(workplaceId, dateStr).then(res => res.data ?? res).catch(() => null),
+            getVisitSummary(dateStr).catch(() => null),
+        ]).then(([sales, visit]) => {
+            setSalesData(sales)
+            setVisitData(visit)
+        }).finally(() => setSalesLoading(false))
     }, [workplaceId, dateStr])
 
     function prevMonth() {
@@ -131,11 +136,15 @@ export default function Sales() {
                 ) : salesData ? (
                     <>
                         <DailySummary
+                            date={dateStr}
                             netRevenue={netRevenue}
                             totalOrders={ordersTotal}
                             totalReturns={returnsTotal}
                             dailyPlan={dailyPlan}
                             dailyAchievement={dailyAchievement}
+                            firstVisit={visitData?.first_visit_by_plan ?? null}
+                            lastVisit={visitData?.last_visit_by_plan ?? null}
+                            onViewVisits={() => navigate('/visits', { state: { date: dateStr } })}
                         />
                         {transactions.length > 0
                             ? <TransactionList transactions={transactions} onSelect={handleSelect} />

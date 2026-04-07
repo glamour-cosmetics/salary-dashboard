@@ -1,11 +1,47 @@
 import { useT } from '../../i18n/useT'
 import { formatCurrency, formatPercent } from '../../utils/formatters'
 
-export default function DailySummary({ date, netRevenue, totalOrders, totalReturns, dailyPlan = 0, dailyAchievement = 0, currency = 'UZS' }) {
+export default function DailySummary({ date, netRevenue, totalOrders, totalReturns, dailyPlan = 0, dailyAchievement = 0, firstVisit = null, lastVisit = null, currency = 'UZS', onViewVisits }) {
     const t = useT('sales')
     const fmt = (v) => formatCurrency(v, '').trim()
+    // API returns "HH:MM:SS" in UTC — convert to UTC+5 and display HH:MM
+    const fmtTime = (v) => {
+        if (!v) return '—'
+        const [h, m] = v.split(':').map(Number)
+        const totalMin = (h * 60 + m + 5 * 60) % (24 * 60)
+        const hh = String(Math.floor(totalMin / 60)).padStart(2, '0')
+        const mm = String(totalMin % 60).padStart(2, '0')
+        return `${hh}:${mm}`
+    }
     return (
         <section className="mb-8">
+            <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="bg-surface-container-lowest p-4 rounded-xl flex flex-col">
+                    <span className="text-[10px] uppercase tracking-widest font-bold text-outline">{t.startTime}</span>
+                    <div className="flex items-center gap-2 mt-1">
+                        <span className="material-symbols-outlined text-secondary text-lg">login</span>
+                        <span className="text-xl font-bold text-on-surface">{fmtTime(firstVisit)}</span>
+                    </div>
+                </div>
+                <div className="bg-surface-container-lowest p-4 rounded-xl flex flex-col">
+                    <span className="text-[10px] uppercase tracking-widest font-bold text-outline">{t.endTime}</span>
+                    <div className="flex items-center gap-2 mt-1">
+                        <span className="material-symbols-outlined text-error text-lg">logout</span>
+                        <span className="text-xl font-bold text-on-surface">{fmtTime(lastVisit)}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div className="mb-6">
+                <button onClick={onViewVisits} className="w-full bg-white/70 backdrop-blur-md hover:bg-white/90 text-on-surface-variant font-bold py-4 px-5 rounded-xl flex items-center gap-3 transition-all active:scale-[0.98] border border-primary/10 shadow-sm group">
+                    <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/5 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                        <span className="material-symbols-outlined text-xl">event_note</span>
+                    </div>
+                    <span className="text-xs uppercase tracking-[0.15em] font-bold font-label">{t.viewVisitLog}</span>
+                    <span className="material-symbols-outlined text-lg ml-auto text-primary/30 group-hover:text-primary transition-colors">chevron_right</span>
+                </button>
+            </div>
+
             <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2 bg-gradient-to-br from-primary-container to-primary p-6 rounded-xl text-on-primary">
                     <span className="text-[10px] uppercase tracking-widest font-bold opacity-70">{t.netRevenue}</span>
