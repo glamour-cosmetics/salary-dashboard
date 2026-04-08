@@ -130,6 +130,8 @@ const translations = {
       overachievement_bonus:      { label: 'Бонус за перевыполнение' },
       transportation_compensation:{ label: 'Компенсация транспорта' },
       qualification_bonus:        { label: 'Квалификационный бонус' },
+      brand_kpi_bonus:            { label: 'Брендовый KPI Бонус' },
+      product_kpi_bonus:          { label: 'Продуктовый KPI Бонус' },
       disclaimer:                 'Расчёт является предварительным',
     },
     dashboard: {
@@ -349,6 +351,8 @@ const translations = {
       overachievement_bonus:      { label: 'Rejadan oshirish bonusi' },
       transportation_compensation:{ label: 'Transport kompensatsiyasi' },
       qualification_bonus:        { label: 'Malaka bonusi' },
+      brand_kpi_bonus:            { label: 'Brend KPI bonusi' },
+      product_kpi_bonus:          { label: 'Mahsulot KPI bonusi' },
       disclaimer:                 'Hisob-kitob taxminiy hisoblanadi',
     },
     dashboard: {
@@ -568,6 +572,8 @@ const translations = {
       overachievement_bonus:      { label: 'Overachievement Bonus' },
       transportation_compensation:{ label: 'Transportation' },
       qualification_bonus:        { label: 'Qualification Bonus' },
+      brand_kpi_bonus:            { label: 'Brand KPI Bonus' },
+      product_kpi_bonus:          { label: 'Product KPI Bonus' },
       disclaimer:                 'This calculation is preliminary',
     },
     dashboard: {

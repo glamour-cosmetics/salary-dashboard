@@ -363,13 +363,29 @@ export default function Dashboard() {
 						<h2 className="text-[12px] font-bold uppercase tracking-widest text-outline px-1">{t.earningsBreakdown}</h2>
 						<div className="space-y-3">
 							{salary.components.map((item) =>
-								item.highlight ? (
+								item.isPenalty ? (
+									<div key={item.id} className="bg-gradient-to-r from-error/10 to-transparent border border-error/20 rounded-xl p-4 flex items-center justify-between relative overflow-hidden">
+										<div className="flex items-center gap-4 relative z-10">
+											<div className="w-10 h-10 rounded-lg bg-error text-on-error flex items-center justify-center">
+												<span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>{item.icon}</span>
+											</div>
+											<div>
+												<p className="text-sm font-bold text-error">{item.label ?? tBreakdown[item.id]?.label}</p>
+												{item.description && <p className="text-[10px] text-outline mt-0.5">{item.description}</p>}
+											</div>
+										</div>
+										<p className="text-sm font-extrabold text-error">{formatCurrency(item.amount, '')}</p>
+									</div>
+								) : item.highlight ? (
 									<div key={item.id} className="bg-gradient-to-r from-secondary/10 to-transparent border border-secondary/20 rounded-xl p-4 flex items-center justify-between relative overflow-hidden">
 										<div className="flex items-center gap-4 relative z-10">
 											<div className="w-10 h-10 rounded-lg bg-secondary text-on-secondary flex items-center justify-center">
 												<span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>{item.icon}</span>
 											</div>
-											<p className="text-sm font-bold text-secondary">{tBreakdown[item.id]?.label}</p>
+											<div>
+												<p className="text-sm font-bold text-secondary">{item.label ?? tBreakdown[item.id]?.label}</p>
+												{item.description && <p className="text-[10px] text-outline mt-0.5">{item.description}</p>}
+											</div>
 										</div>
 										<p className="text-sm font-extrabold text-secondary">+{formatCurrency(item.amount, '')}</p>
 									</div>
@@ -380,7 +396,8 @@ export default function Dashboard() {
 												<span className="material-symbols-outlined text-primary">{item.icon}</span>
 											</div>
 											<div>
-												<p className="text-sm font-semibold text-on-surface">{tBreakdown[item.id]?.label}</p>
+												<p className="text-sm font-semibold text-on-surface">{item.label ?? tBreakdown[item.id]?.label}</p>
+												{item.description && <p className="text-[10px] text-outline mt-0.5">{item.description}</p>}
 											</div>
 										</div>
 										<p className="text-sm font-bold text-on-surface">{formatCurrency(item.amount, '')}</p>

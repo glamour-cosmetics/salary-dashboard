@@ -156,15 +156,30 @@ function buildSalaryComponents(breakdown) {
     { id: 'overachievement_bonus',       icon: 'trending_up',     field: 'overachievement_bonus',     highlight: true },
     { id: 'transportation_compensation', icon: 'directions_car',  field: 'transportation_compensation' },
     { id: 'qualification_bonus',         icon: 'school',          field: 'qualification_bonus' },
+    { id: 'brand_kpi_bonus',             icon: 'brand_family',    field: 'brand_kpi_bonus',           highlight: true },
+    { id: 'product_kpi_bonus',           icon: 'inventory_2',     field: 'product_kpi_bonus',         highlight: true },
   ]
   return map
     .filter(({ field }) => toFloat(breakdown?.[field]) > 0)
     .map(({ field, ...rest }) => ({ ...rest, amount: toFloat(breakdown?.[field]) }))
 }
 
+function buildAdjustmentComponents(adjustments) {
+  return (adjustments ?? []).map(adj => ({
+    id:          `adj-${adj.sys_id}`,
+    icon:        adj.record_type === 'BONUS' ? 'add_circle' : 'remove_circle',
+    amount:      toFloat(adj.signed_amount),
+    highlight:   adj.record_type === 'BONUS',
+    isPenalty:   adj.record_type === 'PENALTY',
+    label:       adj.name,
+    description: adj.description ?? null,
+  }))
+}
+
 function transformDashboard(raw) {
   const b = raw.breakdown ?? {}
   const ach = raw.achievements ?? {}
+  const adjustmentComponents = buildAdjustmentComponents(raw.adjustments)
   return {
     salary: {
       total:       toFloat(raw.total_salary),
@@ -173,7 +188,7 @@ function transformDashboard(raw) {
       trendKey:    toFloat(raw.overall_achievement) >= 100 ? 'on_target' : 'below_plan',
       planName:    raw.salary_plan_name ?? '',
       workingDays: { completed: raw.elapsed_workdays ?? 0, total: raw.total_workdays ?? 1 },
-      components:  buildSalaryComponents(b),
+      components:  [...buildSalaryComponents(b), ...adjustmentComponents],
     },
     kpi: {
       planAchievement: toFloat(raw.overall_achievement),
@@ -215,7 +230,7 @@ function transformDashboard(raw) {
     estimated: {
       salary:      toFloat(raw.estimated_salary),
       achievement: toFloat(raw.estimated_overall_achievement),
-      components:  buildSalaryComponents(raw.estimated_breakdown ?? {}),
+      components:  [...buildSalaryComponents(raw.estimated_breakdown ?? {}), ...adjustmentComponents],
     },
     brandKpi: {
       items: (raw.brand_kpi_data?.brand_kpi_items ?? []).map(item => ({
